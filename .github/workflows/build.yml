@@ -1,10 +1,11 @@
-name: Build Android APK
+name: Build and Sign Android APK
 
 on:
   push:
     branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
+  workflow_dispatch:
 
 jobs:
   build:
@@ -19,19 +20,42 @@ jobs:
         with:
           python-version: "3.10"
 
-      - name: Install dependencies
+      - name: Install system dependencies
         run: |
           sudo apt update
-          sudo apt install -y build-essential autoconf automake libtool pkg-config libffi-dev git openjdk-17-jdk
-          pip install --upgrade pip
-          pip install buildozer cython virtualenv
+          sudo apt install -y \
+            autoconf automake libtool pkg-config \
+            libffi-dev libssl-dev zlib1g-dev \
+            liblzma-dev openjdk-17-jdk \
+            unzip git
+
+      - name: Install Buildozer
+        run: |
+          pip install --upgrade pip setuptools wheel Cython
+          pip install buildozer
 
       - name: Build APK
+        working-directory: ./app
         run: |
           buildozer android debug
 
+      # Optional APK signing step — only runs if secrets exist
+      - name: Sign APK
+        if: env.SIGNING_KEYSTORE_BASE64 != ''
+        working-directory: ./app
+        env:
+          SIGNING_KEYSTORE_BASE64: ${{ secrets.SIGNING_KEYSTORE_BASE64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+        run: |
+          echo "$SIGNING_KEYSTORE_BASE64" | base64 --decode > release-key.jks
+          jarsigner -verbose -sigalg SHA256withRSA -digestalg SHA-256 \
+            -keystore release-key.jks -storepass "$KEYSTORE_PASSWORD" \
+            bin/*.apk "$KEY_ALIAS"
+
+      # Upload final APK
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
           name: clc-kenya-app-apk
-          path: bin/*.apk
+          path: app/bin/*.apk
