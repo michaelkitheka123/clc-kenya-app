@@ -26,9 +26,10 @@ jobs:
           sudo apt install -y \
             build-essential autoconf automake libtool pkg-config \
             libffi-dev git openjdk-17-jdk zlib1g-dev libncurses5-dev \
-            libtinfo5 unzip libssl-dev
+            libtinfo6 unzip libssl-dev
           pip install --upgrade pip
           pip install buildozer cython virtualenv
+
 
       - name: Build APK with Buildozer
         working-directory: ./app
