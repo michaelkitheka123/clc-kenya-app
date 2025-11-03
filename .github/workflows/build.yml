@@ -20,41 +20,28 @@ jobs:
         with:
           python-version: "3.10"
 
-      - name: Install system dependencies
+      - name: Install Android & Buildozer dependencies
         run: |
           sudo apt update
           sudo apt install -y \
-            autoconf automake libtool pkg-config \
-            libffi-dev libssl-dev zlib1g-dev \
-            liblzma-dev openjdk-17-jdk \
-            unzip git
+            git zip unzip openjdk-17-jdk autoconf automake libtool pkg-config \
+            libffi-dev libssl-dev zlib1g-dev liblzma-dev \
+            libncurses5 cmake
+          pip install --upgrade pip setuptools wheel cython buildozer
 
-      - name: Install Buildozer
-        run: |
-          pip install --upgrade pip setuptools wheel Cython
-          pip install buildozer
-
-      - name: Build APK
-        working-directory: ./app
-        run: |
-          buildozer android debug
-
-      # Optional APK signing step — only runs if secrets exist
-      - name: Sign APK
-        if: env.SIGNING_KEYSTORE_BASE64 != ''
+      - name: Build APK with Buildozer
         working-directory: ./app
         env:
-          SIGNING_KEYSTORE_BASE64: ${{ secrets.SIGNING_KEYSTORE_BASE64 }}
-          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
-          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          BUILDOZER_WARN_ON_ROOT: 0
+          ANDROIDSDK: ${{ github.workspace }}/.buildozer/android/platform/android-sdk
+          ANDROIDNDK: ${{ github.workspace }}/.buildozer/android/platform/android-ndk-r25b
+          PATH: ${{ github.workspace }}/.buildozer/android/platform/apache-ant-1.9.4/bin:$PATH
         run: |
-          echo "$SIGNING_KEYSTORE_BASE64" | base64 --decode > release-key.jks
-          jarsigner -verbose -sigalg SHA256withRSA -digestalg SHA-256 \
-            -keystore release-key.jks -storepass "$KEYSTORE_PASSWORD" \
-            bin/*.apk "$KEY_ALIAS"
+          echo "💡 Creating .buildozer folder and preparing environment..."
+          mkdir -p .buildozer
+          buildozer android debug --verbose
 
-      # Upload final APK
-      - name: Upload APK artifact
+      - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: clc-kenya-app-apk
