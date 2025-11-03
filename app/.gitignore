@@ -1,0 +1,29 @@
+# Buildozer / Android / Kivy ignore
+.buildozer/
+bin/
+*.apk
+*.aab
+*.keystore
+*.log
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# IDE / Editor / System files
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
+
+# Virtual environments
+venv/
+env/
+.venv/
+
+# Local secrets / configs
+local_settings.py
+.env
