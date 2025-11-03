@@ -1,0 +1,2653 @@
+#:kivy 2.2.1
+#:import dp kivy.metrics.dp
+#:import sp kivy.metrics.sp
+
+
+
+<ModernInputField>:
+    canvas.before:
+        # Input Background - Deep Black
+        Color:
+            rgba: (0.05, 0.05, 0.05, 0.95) if self.focus else (0.1, 0.1, 0.1, 0.9)
+        RoundedRectangle:
+            pos: self.pos
+            size: self.size
+            radius: [dp(15),]
+        # Borders - Dark Green for active, Gray for inactive
+        Color:
+            rgba: (0.0, 0.5, 0.0, 1) if self.focus else (0.3, 0.3, 0.3, 0.8)  # Dark Green / Gray
+        Line:
+            rounded_rectangle: [self.x, self.y, self.width, self.height, dp(15)]
+            width: dp(2) if self.focus else dp(1.5)
+    
+    background_color: 0, 0, 0, 0
+    foreground_color: 0.0, 0.8, 0.0, 1  # Bright Green text for visibility
+    padding: [dp(15), dp(12)]
+    font_size: sp(16)
+    multiline: False
+    size_hint_y: None
+    height: dp(50)
+    hint_text_color: 0.4, 0.8, 0.4, 1  # Light Green hint text
+    cursor_color: 0.0, 0.8, 0.0, 1  # Green cursor
+
+<ModernSpinner>:
+    canvas.before:
+        # Input Background - Deep Black
+        Color:
+            rgba: (0.05, 0.05, 0.05, 0.95) if self.is_open else (0.1, 0.1, 0.1, 0.9)
+        RoundedRectangle:
+            pos: self.pos
+            size: self.size
+            radius: [dp(15),]
+        # Borders - Dark Green for active, Gray for inactive
+        Color:
+            rgba: (0.0, 0.5, 0.0, 1) if self.is_open else (0.3, 0.3, 0.3, 0.8)  # Dark Green / Gray
+        Line:
+            rounded_rectangle: [self.x, self.y, self.width, self.height, dp(15)]
+            width: dp(2) if self.is_open else dp(1.5)
+    
+    background_color: 0, 0, 0, 0
+    text_size: self.width - dp(40), None
+    color: 0.0, 0.8, 0.0, 1  # Bright Green text
+    font_size: sp(16)
+    size_hint_y: None
+    height: dp(50)
+    option_cls: "ModernSpinnerOption"
+
+<DateSpinner>:
+    canvas.before:
+        # Input Background - Deep Black
+        Color:
+            rgba: (0.05, 0.05, 0.05, 0.95) if self.is_open else (0.1, 0.1, 0.1, 0.9)
+        RoundedRectangle:
+            pos: self.pos
+            size: self.size
+            radius: [dp(15),]
+        # Borders - Dark Green for active, Gray for inactive
+        Color:
+            rgba: (0.0, 0.5, 0.0, 1) if self.is_open else (0.3, 0.3, 0.3, 0.8)  # Dark Green / Gray
+        Line:
+            rounded_rectangle: [self.x, self.y, self.width, self.height, dp(15)]
+            width: dp(2) if self.is_open else dp(1.5)
+    
+    background_color: 0, 0, 0, 0
+    text_size: self.width - dp(40), None
+    color: 0.0, 0.8, 0.0, 1  # Bright Green text
+    font_size: sp(16)
+    size_hint_y: None
+    height: dp(50)
+    option_cls: "ModernSpinnerOption"
+
+<ModernSpinnerOption>:
+    canvas.before:
+        Color:
+            rgba: (0.1, 0.1, 0.1, 0.95) if self.state == 'down' else (0.05, 0.05, 0.05, 0.95)
+        RoundedRectangle:
+            pos: self.pos
+            size: self.size
+            radius: [dp(10),]
+        Color:
+            rgba: (0.0, 0.5, 0.0, 0.5)
+        Line:
+            rounded_rectangle: [self.x, self.y, self.width, self.height, dp(10)]
+            width: dp(1)
+    
+    background_color: 0, 0, 0, 0
+    color: 0.0, 0.8, 0.0, 1  # Bright Green text
+    font_size: sp(14)
+
+<ErrorLabel>:
+    font_size: sp(12)
+    color: 1.0, 0.3, 0.3, 1  # Bright Red for errors
+    text_size: self.width, None
+    size_hint_y: None
+    height: dp(20)
+    padding: [dp(5), 0]
+
+<OTPInputField>:
+    canvas.before:
+        # Input Background - Deep Black
+        Color:
+            rgba: (0.05, 0.05, 0.05, 0.95) if self.focus else (0.1, 0.1, 0.1, 0.9)
+        RoundedRectangle:
+            pos: self.pos
+            size: self.size
+            radius: [dp(12),]
+        # Borders - Dark Green for active, Gray for inactive
+        Color:
+            rgba: (0.0, 0.5, 0.0, 1) if self.focus else (0.3, 0.3, 0.3, 0.8)  # Dark Green / Gray
+        Line:
+            rounded_rectangle: [self.x, self.y, self.width, self.height, dp(12)]
+            width: dp(2) if self.focus else dp(1.5)
+    
+    background_color: 0, 0, 0, 0
+    foreground_color: 0.0, 0.8, 0.0, 1  # Bright Green text
+    padding: [dp(10), dp(10)]
+    font_size: sp(20)
+    multiline: False
+    size_hint: None, None
+    size: dp(50), dp(60)
+    halign: 'center'
+    hint_text_color: 0.4, 0.8, 0.4, 1  # Light Green hint text
+    input_filter: 'int'
+    max_text_length: 1
+    cursor_color: 0.0, 0.8, 0.0, 1  # Green cursor
+
+<RegistrationScreen>:
+    Image:
+        source: 'assets/background.jpeg'
+        allow_stretch: True
+        keep_ratio: False
+        pos: self.pos
+        size: self.size
+    
+    ScrollView:
+        do_scroll_x: False
+        do_scroll_y: True
+        
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint_y: None
+            height: self.minimum_height
+            padding: [dp(20), dp(30)]
+            spacing: dp(15)
+            
+            # Registration Form Container
+            BoxLayout:
+                orientation: 'vertical'
+                size_hint: None, None
+                size: dp(400), self.minimum_height
+                pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+                padding: [dp(30), dp(35)]
+                spacing: dp(20)
+                
+                canvas.before:
+                    Color:
+                        rgba: 0.11, 0.168, 0.227, 0.85  # Dark Navy with transparency
+                    RoundedRectangle:
+                        pos: self.pos
+                        size: self.size
+                        radius: [dp(25),]
+                    Color:
+                        rgba: 0.949, 0.788, 0.298, 0.5  # Gold border
+                    Line:
+                        rounded_rectangle: [self.x, self.y, self.width, self.height, dp(25)]
+                        width: dp(1.5)
+                
+                # Logo and Group Name Section
+                BoxLayout:
+                    orientation: 'vertical'
+                    size_hint_y: None
+                    height: dp(140)
+                    spacing: dp(15)
+                    
+                    # Oval Logo Container - SIMPLIFIED to avoid recursion
+                    BoxLayout:
+                        orientation: 'vertical'
+                        size_hint_y: None
+                        height: dp(80)
+                        padding: [0, dp(5)]
+                        
+                        canvas.before:
+                            # Gold oval background
+                            Color:
+                                rgba: 0.949, 0.788, 0.298, 0.9  # Gold
+                            Ellipse:
+                                pos: self.x + (self.width - dp(80)) / 2, self.y + (self.height - dp(60)) / 2
+                                size: dp(80), dp(60)
+                            
+                            # Outer gold border
+                            Color:
+                                rgba: 0.949, 0.788, 0.298, 1  # Gold
+                            Line:
+                                ellipse: [self.x + (self.width - dp(80)) / 2, self.y + (self.height - dp(60)) / 2, dp(80), dp(60)]
+                                width: dp(2)
+
+                        # Logo image - centered
+                        Image:
+                            source: 'assets/logo.png'
+                            allow_stretch: True
+                            keep_ratio: True
+                            size_hint: None, None
+                            size: dp(70), dp(50)
+                            pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+                    
+                    # Group Name - Gold color
+                    Label:
+                        text: 'CHRISTIAN LIFE COMMUNITY KENYA'
+                        font_size: sp(20)
+                        bold: True
+                        color: 0.949, 0.788, 0.298, 1  # Gold
+                        size_hint_y: None
+                        height: dp(35)
+                        text_size: self.width, None
+                        halign: 'center'
+                
+                # Name Field
+                BoxLayout:
+                    orientation: 'vertical'
+                    size_hint_y: None
+                    height: dp(85)
+                    spacing: dp(8)
+                    
+                    Label:
+                        text: 'Full Name'
+                        font_size: sp(14)
+                        color: 1, 1, 1, 1  # White labels for clarity
+                        size_hint_y: None
+                        height: dp(25)
+                        text_size: self.width, None
+                        halign: 'left'
+                        bold: True
+                    
+                    ModernInputField:
+                        id: name_input
+                        hint_text: 'Enter your full name'
+                        on_text: root.validate_name()
+                    
+                    ErrorLabel:
+                        id: name_error
+                        text: ''
+                
+                # Email Field
+                BoxLayout:
+                    orientation: 'vertical'
+                    size_hint_y: None
+                    height: dp(85)
+                    spacing: dp(8)
+                    
+                    Label:
+                        text: 'Email Address'
+                        font_size: sp(14)
+                        color: 1, 1, 1, 1  # White labels
+                        size_hint_y: None
+                        height: dp(25)
+                        text_size: self.width, None
+                        halign: 'left'
+                        bold: True
+                    
+                    ModernInputField:
+                        id: email_input
+                        hint_text: 'Enter your email'
+                        on_text: root.validate_email()
+                    
+                    ErrorLabel:
+                        id: email_error
+                        text: ''
+                
+                # Phone Field
+                BoxLayout:
+                    orientation: 'vertical'
+                    size_hint_y: None
+                    height: dp(85)
+                    spacing: dp(8)
+                    
+                    Label:
+                        text: 'Phone Number'
+                        font_size: sp(14)
+                        color: 1, 1, 1, 1  # White labels
+                        size_hint_y: None
+                        height: dp(25)
+                        text_size: self.width, None
+                        halign: 'left'
+                        bold: True
+                    
+                    ModernInputField:
+                        id: phone_input
+                        hint_text: '+254 XXX XXX XXX'
+                        on_text: root.validate_phone()
+                    
+                    ErrorLabel:
+                        id: phone_error
+                        text: ''
+                
+                # Date of Birth Section
+                BoxLayout:
+                    orientation: 'vertical'
+                    size_hint_y: None
+                    height: dp(140)
+                    spacing: dp(10)
+                    
+                    Label:
+                        text: 'Date of Birth'
+                        font_size: sp(14)
+                        color: 1, 1, 1, 1  # White label
+                        size_hint_y: None
+                        height: dp(25)
+                        text_size: self.width, None
+                        halign: 'left'
+                        bold: True
+                    
+                    # Date Picker Row
+                    BoxLayout:
+                        orientation: 'horizontal'
+                        size_hint_y: None
+                        height: dp(55)
+                        spacing: dp(12)
+                        
+                        DateSpinner:
+                            id: month_spinner
+                            text: 'Sep'
+                            values: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+                            on_text: root.on_date_change()
+                        
+                        DateSpinner:
+                            id: day_spinner
+                            text: '30'
+                            values: [str(i).zfill(2) for i in range(1, 32)]
+                            on_text: root.on_date_change()
+                        
+                        DateSpinner:
+                            id: year_spinner
+                            text: '2021'
+                            values: [str(i) for i in range(1950, 2024)]
+                            on_text: root.on_date_change()
+                    
+                    # Selected Date Display - Gold color
+                    Label:
+                        id: date_display
+                        text: 'Selected: 30 Sep 2021'
+                        font_size: sp(14)
+                        color: 0.949, 0.788, 0.298, 1  # Gold
+                        size_hint_y: None
+                        height: dp(30)
+                        text_size: self.width, None
+                        halign: 'center'
+                
+                # Occupation Field
+                BoxLayout:
+                    orientation: 'vertical'
+                    size_hint_y: None
+                    height: dp(85)
+                    spacing: dp(8)
+                    
+                    Label:
+                        text: 'Occupation'
+                        font_size: sp(14)
+                        color: 1, 1, 1, 1  # White label
+                        size_hint_y: None
+                        height: dp(25)
+                        text_size: self.width, None
+                        halign: 'left'
+                        bold: True
+                    
+                    ModernSpinner:
+                        id: occupation_spinner
+                        text: 'Student'
+                        values: ['Student', 'Alumni']
+                        on_text: root.on_occupation_select()
+                
+                # Dynamic Field based on Occupation
+                BoxLayout:
+                    orientation: 'vertical'
+                    size_hint_y: None
+                    height: dp(85) if root.occupation_field_visible else 0
+                    spacing: dp(8)
+                    opacity: 1 if root.occupation_field_visible else 0
+                    
+                    Label:
+                        text: 'Institution' if root.show_institutions else 'Current Residence'
+                        font_size: sp(14)
+                        color: 1, 1, 1, 1  # White label
+                        size_hint_y: None
+                        height: dp(25)
+                        text_size: self.width, None
+                        halign: 'left'
+                        bold: True
+                        opacity: 1 if root.occupation_field_visible else 0
+                    
+                    ModernSpinner:
+                        id: institution_spinner
+                        text: 'University of Nairobi'
+                        values: []
+                        opacity: 1 if root.show_institutions else 0
+                        height: dp(50) if root.show_institutions else 0
+                    
+                    ModernInputField:
+                        id: residence_input
+                        hint_text: 'Enter your current residence'
+                        opacity: 1 if root.show_residence else 0
+                        height: dp(50) if root.show_residence else 0
+                
+                # Password Field
+                BoxLayout:
+                    orientation: 'vertical'
+                    size_hint_y: None
+                    height: dp(85)
+                    spacing: dp(8)
+                    
+                    Label:
+                        text: 'Password'
+                        font_size: sp(14)
+                        color: 1, 1, 1, 1  # White label
+                        size_hint_y: None
+                        height: dp(25)
+                        text_size: self.width, None
+                        halign: 'left'
+                        bold: True
+                    
+                    ModernInputField:
+                        id: password_input
+                        hint_text: 'Enter your password'
+                        password: True
+                        on_text: root.validate_password()
+                    
+                    ErrorLabel:
+                        id: password_error
+                        text: ''
+                
+                # Submit Button - Gold themed
+                Button:
+                    text: 'Register'
+                    font_size: sp(18)
+                    bold: True
+                    size_hint_y: None
+                    height: dp(55)
+                    background_color: 0.949, 0.788, 0.298, 1  # Gold
+                    background_normal: ''
+                    color: 0.11, 0.168, 0.227, 1  # Dark Navy text
+                    on_press: root.submit_registration()
+                    
+                    canvas.before:
+                        Color:
+                            rgba: (0.996, 0.875, 0.498, 1) if self.state == 'down' else (0.949, 0.788, 0.298, 1)  # Lighter gold when pressed
+                        RoundedRectangle:
+                            pos: self.pos
+                            size: self.size
+                            radius: [dp(15),]
+                
+                # Login redirect - Gold accent
+                Label:
+                    text: 'Already have an account? [color=#f2c94c][u]Login[/u][/color]'  # Gold
+                    font_size: sp(14)
+                    color: 1, 1, 1, 0.9
+                    markup: True
+                    size_hint_y: None
+                    height: dp(30)
+                    text_size: self.width, None
+                    halign: 'center'
+                    on_touch_down: root.navigate_to_login() if self.collide_point(*args[1].pos) else None
+<OTPScreen>:
+    #user_email: ''
+    
+    Image:
+        source: 'assets/background.jpeg'
+        allow_stretch: True
+        keep_ratio: False
+        pos: self.pos
+        size: self.size
+    
+    ScrollView:
+        do_scroll_x: False
+        do_scroll_y: True
+        
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint_y: None
+            height: self.minimum_height
+            padding: [dp(20), dp(30)]
+            spacing: dp(15)
+            
+            # OTP Form Container
+            BoxLayout:
+                orientation: 'vertical'
+                size_hint: None, None
+                size: dp(400), dp(500)
+                pos_hint: {'center_x': 0.5, 'center_y': 0.4}
+                padding: [dp(30), dp(35)]
+                spacing: dp(25)
+                
+                canvas.before:
+                    Color:
+                        rgba: 0.11, 0.168, 0.227, 0.85  # Dark Navy with transparency
+                    RoundedRectangle:
+                        pos: self.pos
+                        size: self.size
+                        radius: [dp(25),]
+                    Color:
+                        rgba: 0.949, 0.788, 0.298, 0.5  # Gold border
+                    Line:
+                        rounded_rectangle: [self.x, self.y, self.width, self.height, dp(25)]
+                        width: dp(1.5)
+                
+                # Logo and Group Name Section
+                BoxLayout:
+                    orientation: 'vertical'
+                    size_hint_y: None
+                    height: dp(120)
+                    spacing: dp(15)
+                    
+                    # Oval Logo Container
+                    BoxLayout:
+                        orientation: 'vertical'
+                        size_hint_y: None
+                        height: dp(70)
+                        padding: [0, dp(5)]
+                        
+                        canvas.before:
+                            # Gold oval background
+                            Color:
+                                rgba: 0.949, 0.788, 0.298, 0.9  # Gold
+                            Ellipse:
+                                pos: self.x + (self.width - dp(70)) / 2, self.y + (self.height - dp(50)) / 2
+                                size: dp(70), dp(50)
+                            
+                            # Outer gold border
+                            Color:
+                                rgba: 0.949, 0.788, 0.298, 1  # Gold
+                            Line:
+                                ellipse: [self.x + (self.width - dp(70)) / 2, self.y + (self.height - dp(50)) / 2, dp(70), dp(50)]
+                                width: dp(2)
+
+                        # Logo image - centered
+                        Image:
+                            source: 'assets/logo.png'
+                            allow_stretch: True
+                            keep_ratio: True
+                            size_hint: None, None
+                            size: dp(60), dp(40)
+                            pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+                    
+                    # Group Name - Gold color
+                    Label:
+                        text: 'CHRISTIAN LIFE COMMUNITY KENYA'
+                        font_size: sp(18)
+                        bold: True
+                        color: 0.949, 0.788, 0.298, 1  # Gold
+                        size_hint_y: None
+                        height: dp(30)
+                        text_size: self.width, None
+                        halign: 'center'
+                
+                # Title - FIXED: Added missing id
+                Label:
+                    id: otp_title
+                    text: 'Verify Your Account'
+                    font_size: sp(22)
+                    bold: True
+                    color: 1, 1, 1, 1  # White
+                    size_hint_y: None
+                    height: dp(40)
+                    text_size: self.width, None
+                    halign: 'center'
+                
+                # OTP Instructions
+                Label:
+                    id: otp_instructions
+                    text: 'Please enter the OTP sent to your email'
+                    font_size: sp(14)
+                    color: 0.9, 0.9, 0.9, 1  # Light gray
+                    size_hint_y: None
+                    height: dp(40)
+                    text_size: self.width - dp(20), None
+                    halign: 'center'
+                    padding: [dp(10), 0]
+                
+                # OTP Input Boxes - UPDATED: Changed method bindings
+                BoxLayout:
+                    orientation: 'horizontal'
+                    size_hint_y: None
+                    height: dp(70)
+                    spacing: dp(12)
+                    padding: [dp(15), 0]
+                    pos_hint: {'center_x': 0.5}
+                    
+                    # Individual OTP boxes - UPDATED: Using new methods
+                    OTPInputField:
+                        id: otp_1
+                        size_hint: None, None
+                        size: dp(48), dp(58)
+                        font_size: sp(24)
+                        halign: 'center'
+                        multiline: False
+                        on_text: root.on_otp_text_change(0, self.text)
+                    
+                    OTPInputField:
+                        id: otp_2
+                        size_hint: None, None
+                        size: dp(48), dp(58)
+                        font_size: sp(24)
+                        halign: 'center'
+                        multiline: False
+                        on_text: root.on_otp_text_change(1, self.text)
+                    
+                    OTPInputField:
+                        id: otp_3
+                        size_hint: None, None
+                        size: dp(48), dp(58)
+                        font_size: sp(24)
+                        halign: 'center'
+                        multiline: False
+                        on_text: root.on_otp_text_change(2, self.text)
+                    
+                    OTPInputField:
+                        id: otp_4
+                        size_hint: None, None
+                        size: dp(48), dp(58)
+                        font_size: sp(24)
+                        halign: 'center'
+                        multiline: False
+                        on_text: root.on_otp_text_change(3, self.text)
+                    
+                    OTPInputField:
+                        id: otp_5
+                        size_hint: None, None
+                        size: dp(48), dp(58)
+                        font_size: sp(24)
+                        halign: 'center'
+                        multiline: False
+                        on_text: root.on_otp_text_change(4, self.text)
+                    
+                    OTPInputField:
+                        id: otp_6
+                        size_hint: None, None
+                        size: dp(48), dp(58)
+                        font_size: sp(24)
+                        halign: 'center'
+                        multiline: False
+                        on_text: root.on_otp_text_change(5, self.text)
+                
+                # Error Label
+                ErrorLabel:
+                    id: otp_error
+                    text: ''
+                    size_hint_y: None
+                    height: dp(25)
+                    halign: 'center'
+                
+                # Timer and Resend Section
+                BoxLayout:
+                    orientation: 'vertical'
+                    size_hint_y: None
+                    height: dp(60)
+                    spacing: dp(5)
+                    
+                    # Timer
+                    Label:
+                        id: timer_label
+                        text: 'OTP expires in 10:00'
+                        font_size: sp(14)
+                        color: 0.949, 0.788, 0.298, 1  # Gold
+                        size_hint_y: None
+                        height: dp(25)
+                        text_size: self.width, None
+                        halign: 'center'
+                    
+                    # Resend Button
+                    Button:
+                        id: resend_button
+                        text: 'Resend OTP'
+                        font_size: sp(14)
+                        size_hint_y: None
+                        height: dp(35)
+                        background_color: 0, 0, 0, 0  # Transparent
+                        background_normal: ''
+                        color: 0.949, 0.788, 0.298, 1  # Gold
+                        disabled: True
+                        on_press: root.resend_otp()
+                        
+                        canvas.before:
+                            Color:
+                                rgba: (0.949, 0.788, 0.298, 0.3) if self.state == 'down' else (0, 0, 0, 0)
+                            RoundedRectangle:
+                                pos: self.pos
+                                size: self.size
+                                radius: [dp(8),]
+                            Color:
+                                rgba: 0.949, 0.788, 0.298, 0.5
+                            Line:
+                                rounded_rectangle: [self.x, self.y, self.width, self.height, dp(8)]
+                                width: dp(1)
+                
+                # Verify Button
+                Button:
+                    text: 'Verify OTP'
+                    font_size: sp(18)
+                    bold: True
+                    size_hint_y: None
+                    height: dp(55)
+                    background_color: 0.949, 0.788, 0.298, 1  # Gold
+                    background_normal: ''
+                    color: 0.11, 0.168, 0.227, 1  # Dark Navy text
+                    on_press: root.verify_otp()
+                    
+                    canvas.before:
+                        Color:
+                            rgba: (0.996, 0.875, 0.498, 1) if self.state == 'down' else (0.949, 0.788, 0.298, 1)
+                        RoundedRectangle:
+                            pos: self.pos
+                            size: self.size
+                            radius: [dp(15),]
+                
+                # Back to Registration
+                Button:
+                    text: 'Wrong email? Go Back'
+                    font_size: sp(14)
+                    size_hint_y: None
+                    height: dp(30)
+                    background_color: 0, 0, 0, 0  # Transparent
+                    background_normal: ''
+                    color: 0.949, 0.788, 0.298, 1  # Gold
+                    on_press: root.go_back_to_registration()
+                    
+                    canvas.before:
+                        Color:
+                            rgba: (0.949, 0.788, 0.298, 0.1) if self.state == 'down' else (0, 0, 0, 0)
+                        RoundedRectangle:
+                            pos: self.pos
+                            size: self.size
+                            radius: [dp(5),]
+<LoginScreen>:
+    Image:
+        source: 'assets/background.jpeg'
+        allow_stretch: True
+        keep_ratio: False
+        pos: self.pos
+        size: self.size
+    
+    ScrollView:
+        do_scroll_x: False
+        do_scroll_y: True
+        
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint_y: None
+            height: self.minimum_height
+            padding: [dp(20), dp(30)]
+            spacing: dp(15)
+            
+            # Login Form Container
+            BoxLayout:
+                orientation: 'vertical'
+                size_hint: None, None
+                size: dp(400), dp(450)
+                pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+                padding: [dp(30), dp(35)]
+                spacing: dp(20)
+                
+                canvas.before:
+                    Color:
+                        rgba: 0.11, 0.168, 0.227, 0.85  # Dark Navy with transparency
+                    RoundedRectangle:
+                        pos: self.pos
+                        size: self.size
+                        radius: [dp(25),]
+                    Color:
+                        rgba: 0.949, 0.788, 0.298, 0.5  # Gold border
+                    Line:
+                        rounded_rectangle: [self.x, self.y, self.width, self.height, dp(25)]
+                        width: dp(1.5)
+                
+                # Logo and Group Name Section
+                BoxLayout:
+                    orientation: 'vertical'
+                    size_hint_y: None
+                    height: dp(120)
+                    spacing: dp(15)
+                    
+                    # Oval Logo Container
+                    BoxLayout:
+                        orientation: 'vertical'
+                        size_hint_y: None
+                        height: dp(70)
+                        padding: [0, dp(5)]
+                        
+                        canvas.before:
+                            # Gold oval background
+                            Color:
+                                rgba: 0.949, 0.788, 0.298, 0.9  # Gold
+                            Ellipse:
+                                pos: self.x + (self.width - dp(70)) / 2, self.y + (self.height - dp(50)) / 2
+                                size: dp(70), dp(50)
+                            
+                            # Outer gold border
+                            Color:
+                                rgba: 0.949, 0.788, 0.298, 1  # Gold
+                            Line:
+                                ellipse: [self.x + (self.width - dp(70)) / 2, self.y + (self.height - dp(50)) / 2, dp(70), dp(50)]
+                                width: dp(2)
+
+                        # Logo image - centered
+                        Image:
+                            source: 'assets/logo.png'
+                            allow_stretch: True
+                            keep_ratio: True
+                            size_hint: None, None
+                            size: dp(60), dp(40)
+                            pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+                    
+                    # Group Name - Gold color
+                    Label:
+                        text: 'CHRISTIAN LIFE COMMUNITY KENYA'
+                        font_size: sp(18)
+                        bold: True
+                        color: 0.949, 0.788, 0.298, 1  # Gold
+                        size_hint_y: None
+                        height: dp(30)
+                        text_size: self.width, None
+                        halign: 'center'
+                
+                # Title
+                Label:
+                    text: 'Welcome Back'
+                    font_size: sp(22)
+                    bold: True
+                    color: 1, 1, 1, 1  # White
+                    size_hint_y: None
+                    height: dp(40)
+                    text_size: self.width, None
+                    halign: 'center'
+                
+                # Email Field
+                BoxLayout:
+                    orientation: 'vertical'
+                    size_hint_y: None
+                    height: dp(85)
+                    spacing: dp(8)
+                    
+                    Label:
+                        text: 'Email Address'
+                        font_size: sp(14)
+                        color: 1, 1, 1, 1  # White labels
+                        size_hint_y: None
+                        height: dp(25)
+                        text_size: self.width, None
+                        halign: 'left'
+                        bold: True
+                    
+                    ModernInputField:
+                        id: email_input
+                        hint_text: 'Enter your email'
+                        on_text: root.validate_email()
+                    
+                    ErrorLabel:
+                        id: email_error
+                        text: ''
+                
+                # Password Field
+                BoxLayout:
+                    orientation: 'vertical'
+                    size_hint_y: None
+                    height: dp(85)
+                    spacing: dp(8)
+                    
+                    Label:
+                        text: 'Password'
+                        font_size: sp(14)
+                        color: 1, 1, 1, 1  # White label
+                        size_hint_y: None
+                        height: dp(25)
+                        text_size: self.width, None
+                        halign: 'left'
+                        bold: True
+                    
+                    ModernInputField:
+                        id: password_input
+                        hint_text: 'Enter your password'
+                        password: True
+                        on_text: root.validate_password()
+                    
+                    ErrorLabel:
+                        id: password_error
+                        text: ''
+                
+                # Login Button
+                Button:
+                    text: 'Login'
+                    font_size: sp(18)
+                    bold: True
+                    size_hint_y: None
+                    height: dp(55)
+                    background_color: 0.949, 0.788, 0.298, 1  # Gold
+                    background_normal: ''
+                    color: 0.11, 0.168, 0.227, 1  # Dark Navy text
+                    on_press: root.login_user()
+                    
+                    canvas.before:
+                        Color:
+                            rgba: (0.996, 0.875, 0.498, 1) if self.state == 'down' else (0.949, 0.788, 0.298, 1)  # Lighter gold when pressed
+                        RoundedRectangle:
+                            pos: self.pos
+                            size: self.size
+                            radius: [dp(15),]
+                
+                # Forgot Password Link
+                Button:
+                    text: 'Forgot Password?'
+                    font_size: sp(14)
+                    size_hint_y: None
+                    height: dp(30)
+                    background_color: 0, 0, 0, 0  # Transparent
+                    background_normal: ''
+                    color: 0.949, 0.788, 0.298, 1  # Gold
+                    on_press: root.navigate_to_forgot_password()
+                    
+                    canvas.before:
+                        Color:
+                            rgba: (0.949, 0.788, 0.298, 0.1) if self.state == 'down' else (0, 0, 0, 0)
+                        RoundedRectangle:
+                            pos: self.pos
+                            size: self.size
+                            radius: [dp(5),]
+                
+                # Register redirect - Gold accent
+                Label:
+                    text: "Don't have an account? [color=#f2c94c][u]Register[/u][/color]"  # Gold
+                    font_size: sp(14)
+                    color: 1, 1, 1, 0.9
+                    markup: True
+                    size_hint_y: None
+                    height: dp(30)
+                    text_size: self.width, None
+                    halign: 'center'
+                    on_touch_down: root.navigate_to_registration() if self.collide_point(*args[1].pos) else None
+
+<ForgotPasswordScreen>:
+    user_email: ''
+    
+    Image:
+        source: 'assets/background.jpeg'
+        allow_stretch: True
+        keep_ratio: False
+        pos: self.pos
+        size: self.size
+    
+    ScrollView:
+        do_scroll_x: False
+        do_scroll_y: True
+        
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint_y: None
+            height: self.minimum_height
+            padding: [dp(20), dp(30)]
+            spacing: dp(15)
+            
+            # Forgot Password Form Container
+            BoxLayout:
+                orientation: 'vertical'
+                size_hint: None, None
+                size: dp(400), dp(400)
+                pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+                padding: [dp(30), dp(35)]
+                spacing: dp(20)
+                
+                canvas.before:
+                    Color:
+                        rgba: 0.11, 0.168, 0.227, 0.85  # Dark Navy with transparency
+                    RoundedRectangle:
+                        pos: self.pos
+                        size: self.size
+                        radius: [dp(25),]
+                    Color:
+                        rgba: 0.949, 0.788, 0.298, 0.5  # Gold border
+                    Line:
+                        rounded_rectangle: [self.x, self.y, self.width, self.height, dp(25)]
+                        width: dp(1.5)
+                
+                # Logo and Group Name Section
+                BoxLayout:
+                    orientation: 'vertical'
+                    size_hint_y: None
+                    height: dp(120)
+                    spacing: dp(15)
+                    
+                    # Oval Logo Container
+                    BoxLayout:
+                        orientation: 'vertical'
+                        size_hint_y: None
+                        height: dp(70)
+                        padding: [0, dp(5)]
+                        
+                        canvas.before:
+                            # Gold oval background
+                            Color:
+                                rgba: 0.949, 0.788, 0.298, 0.9  # Gold
+                            Ellipse:
+                                pos: self.x + (self.width - dp(70)) / 2, self.y + (self.height - dp(50)) / 2
+                                size: dp(70), dp(50)
+                            
+                            # Outer gold border
+                            Color:
+                                rgba: 0.949, 0.788, 0.298, 1  # Gold
+                            Line:
+                                ellipse: [self.x + (self.width - dp(70)) / 2, self.y + (self.height - dp(50)) / 2, dp(70), dp(50)]
+                                width: dp(2)
+
+                        # Logo image - centered
+                        Image:
+                            source: 'assets/logo.png'
+                            allow_stretch: True
+                            keep_ratio: True
+                            size_hint: None, None
+                            size: dp(60), dp(40)
+                            pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+                    
+                    # Group Name - Gold color
+                    Label:
+                        text: 'CHRISTIAN LIFE COMMUNITY KENYA'
+                        font_size: sp(18)
+                        bold: True
+                        color: 0.949, 0.788, 0.298, 1  # Gold
+                        size_hint_y: None
+                        height: dp(30)
+                        text_size: self.width, None
+                        halign: 'center'
+                
+                # Title
+                Label:
+                    text: 'Reset Password'
+                    font_size: sp(22)
+                    bold: True
+                    color: 1, 1, 1, 1  # White
+                    size_hint_y: None
+                    height: dp(40)
+                    text_size: self.width, None
+                    halign: 'center'
+                
+                # Instructions
+                Label:
+                    text: 'Enter your email to receive a password reset OTP'
+                    font_size: sp(14)
+                    color: 0.9, 0.9, 0.9, 1  # Light gray
+                    size_hint_y: None
+                    height: dp(40)
+                    text_size: self.width - dp(20), None
+                    halign: 'center'
+                    padding: [dp(10), 0]
+                
+                # Email Field
+                BoxLayout:
+                    orientation: 'vertical'
+                    size_hint_y: None
+                    height: dp(85)
+                    spacing: dp(8)
+                    
+                    Label:
+                        text: 'Email Address'
+                        font_size: sp(14)
+                        color: 1, 1, 1, 1  # White labels
+                        size_hint_y: None
+                        height: dp(25)
+                        text_size: self.width, None
+                        halign: 'left'
+                        bold: True
+                    
+                    ModernInputField:
+                        id: email_input
+                        hint_text: 'Enter your registered email'
+                        on_text: root.validate_email()
+                    
+                    ErrorLabel:
+                        id: email_error
+                        text: ''
+                
+                # Send OTP Button
+                Button:
+                    text: 'Send Reset OTP'
+                    font_size: sp(18)
+                    bold: True
+                    size_hint_y: None
+                    height: dp(55)
+                    background_color: 0.949, 0.788, 0.298, 1  # Gold
+                    background_normal: ''
+                    color: 0.11, 0.168, 0.227, 1  # Dark Navy text
+                    on_press: root.send_reset_otp()
+                    
+                    canvas.before:
+                        Color:
+                            rgba: (0.996, 0.875, 0.498, 1) if self.state == 'down' else (0.949, 0.788, 0.298, 1)  # Lighter gold when pressed
+                        RoundedRectangle:
+                            pos: self.pos
+                            size: self.size
+                            radius: [dp(15),]
+                
+                # Back to Login
+                Button:
+                    text: 'Back to Login'
+                    font_size: sp(14)
+                    size_hint_y: None
+                    height: dp(30)
+                    background_color: 0, 0, 0, 0  # Transparent
+                    background_normal: ''
+                    color: 0.949, 0.788, 0.298, 1  # Gold
+                    on_press: root.go_back_to_login()
+                    
+                    canvas.before:
+                        Color:
+                            rgba: (0.949, 0.788, 0.298, 0.1) if self.state == 'down' else (0, 0, 0, 0)
+                        RoundedRectangle:
+                            pos: self.pos
+                            size: self.size
+                            radius: [dp(5),]
+<ResetPasswordScreen>:
+    user_email: ''
+    
+    Image:
+        source: 'assets/background.jpeg'
+        allow_stretch: True
+        keep_ratio: False
+        pos: self.pos
+        size: self.size
+    
+    ScrollView:
+        do_scroll_x: False
+        do_scroll_y: True
+        
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint_y: None
+            height: self.minimum_height
+            padding: [dp(20), dp(30)]
+            spacing: dp(15)
+            
+            # Reset Password Form Container
+            BoxLayout:
+                orientation: 'vertical'
+                size_hint: None, None
+                size: dp(400), dp(500)
+                pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+                padding: [dp(30), dp(35)]
+                spacing: dp(20)
+                
+                canvas.before:
+                    Color:
+                        rgba: 0.11, 0.168, 0.227, 0.85  # Dark Navy with transparency
+                    RoundedRectangle:
+                        pos: self.pos
+                        size: self.size
+                        radius: [dp(25),]
+                    Color:
+                        rgba: 0.949, 0.788, 0.298, 0.5  # Gold border
+                    Line:
+                        rounded_rectangle: [self.x, self.y, self.width, self.height, dp(25)]
+                        width: dp(1.5)
+                
+                # Logo and Group Name Section
+                BoxLayout:
+                    orientation: 'vertical'
+                    size_hint_y: None
+                    height: dp(120)
+                    spacing: dp(15)
+                    
+                    # Oval Logo Container
+                    BoxLayout:
+                        orientation: 'vertical'
+                        size_hint_y: None
+                        height: dp(70)
+                        padding: [0, dp(5)]
+                        
+                        canvas.before:
+                            # Gold oval background
+                            Color:
+                                rgba: 0.949, 0.788, 0.298, 0.9  # Gold
+                            Ellipse:
+                                pos: self.x + (self.width - dp(70)) / 2, self.y + (self.height - dp(50)) / 2
+                                size: dp(70), dp(50)
+                            
+                            # Outer gold border
+                            Color:
+                                rgba: 0.949, 0.788, 0.298, 1  # Gold
+                            Line:
+                                ellipse: [self.x + (self.width - dp(70)) / 2, self.y + (self.height - dp(50)) / 2, dp(70), dp(50)]
+                                width: dp(2)
+
+                        # Logo image - centered
+                        Image:
+                            source: 'assets/logo.png'
+                            allow_stretch: True
+                            keep_ratio: True
+                            size_hint: None, None
+                            size: dp(60), dp(40)
+                            pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+                    
+                    # Group Name - Gold color
+                    Label:
+                        text: 'CHRISTIAN LIFE COMMUNITY KENYA'
+                        font_size: sp(18)
+                        bold: True
+                        color: 0.949, 0.788, 0.298, 1  # Gold
+                        size_hint_y: None
+                        height: dp(30)
+                        text_size: self.width, None
+                        halign: 'center'
+                
+                # Title
+                Label:
+                    text: 'Set New Password'
+                    font_size: sp(22)
+                    bold: True
+                    color: 1, 1, 1, 1  # White
+                    size_hint_y: None
+                    height: dp(40)
+                    text_size: self.width, None
+                    halign: 'center'
+                
+                # Instructions
+                Label:
+                    text: 'Create a new strong password for your account'
+                    font_size: sp(14)
+                    color: 0.9, 0.9, 0.9, 1  # Light gray
+                    size_hint_y: None
+                    height: dp(40)
+                    text_size: self.width - dp(20), None
+                    halign: 'center'
+                    padding: [dp(10), 0]
+                
+                # New Password Field
+                BoxLayout:
+                    orientation: 'vertical'
+                    size_hint_y: None
+                    height: dp(85)
+                    spacing: dp(8)
+                    
+                    Label:
+                        text: 'New Password'
+                        font_size: sp(14)
+                        color: 1, 1, 1, 1  # White labels
+                        size_hint_y: None
+                        height: dp(25)
+                        text_size: self.width, None
+                        halign: 'left'
+                        bold: True
+                    
+                    ModernInputField:
+                        id: new_password
+                        hint_text: 'Enter new password'
+                        password: True
+                    
+                    ErrorLabel:
+                        id: new_password_error
+                        text: ''
+                
+                # Confirm Password Field
+                BoxLayout:
+                    orientation: 'vertical'
+                    size_hint_y: None
+                    height: dp(85)
+                    spacing: dp(8)
+                    
+                    Label:
+                        text: 'Confirm Password'
+                        font_size: sp(14)
+                        color: 1, 1, 1, 1  # White label
+                        size_hint_y: None
+                        height: dp(25)
+                        text_size: self.width, None
+                        halign: 'left'
+                        bold: True
+                    
+                    ModernInputField:
+                        id: confirm_password
+                        hint_text: 'Confirm your new password'
+                        password: True
+                
+                # Error Label
+                ErrorLabel:
+                    id: reset_password_error
+                    text: ''
+                    size_hint_y: None
+                    height: dp(30)
+                    halign: 'center'
+                
+                # Reset Password Button
+                Button:
+                    text: 'Reset Password'
+                    font_size: sp(18)
+                    bold: True
+                    size_hint_y: None
+                    height: dp(55)
+                    background_color: 0.949, 0.788, 0.298, 1  # Gold
+                    background_normal: ''
+                    color: 0.11, 0.168, 0.227, 1  # Dark Navy text
+                    on_press: root.reset_password()
+                    
+                    canvas.before:
+                        Color:
+                            rgba: (0.996, 0.875, 0.498, 1) if self.state == 'down' else (0.949, 0.788, 0.298, 1)  # Lighter gold when pressed
+                        RoundedRectangle:
+                            pos: self.pos
+                            size: self.size
+                            radius: [dp(15),]
+                
+                # Back to Login
+                Button:
+                    text: 'Back to Login'
+                    font_size: sp(14)
+                    size_hint_y: None
+                    height: dp(30)
+                    background_color: 0, 0, 0, 0  # Transparent
+                    background_normal: ''
+                    color: 0.949, 0.788, 0.298, 1  # Gold
+                    on_press: root.go_back_to_login()
+                    
+                    canvas.before:
+                        Color:
+                            rgba: (0.949, 0.788, 0.298, 0.1) if self.state == 'down' else (0, 0, 0, 0)
+                        RoundedRectangle:
+                            pos: self.pos
+                            size: self.size
+                            radius: [dp(5),]
+<UserDashboardScreen>:
+    first_name: "User"  # Will be set dynamically
+    
+    Image:
+        source: 'assets/background.jpeg'
+        allow_stretch: True
+        keep_ratio: False
+        pos: self.pos
+        size: self.size
+    
+    BoxLayout:
+        orientation: 'vertical'
+        padding: [dp(20), dp(20), dp(20), dp(15)]
+        spacing: dp(25)
+        
+        # Top Header Section - Redesigned layout
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint_y: None
+            height: dp(120)
+            spacing: dp(10)
+            padding: [dp(15), dp(10)]
+            
+            # Background for the entire header section
+            canvas.before:
+                Color:
+                    rgba: 0.1, 0.1, 0.1, 0.85  # Dark semi-transparent background
+                RoundedRectangle:
+                    pos: self.pos
+                    size: self.size
+                    radius: [dp(20),]
+                Color:
+                    rgba: 0.949, 0.788, 0.298, 0.6  # Gold border
+                Line:
+                    rounded_rectangle: [self.x, self.y, self.width, self.height, dp(20)]
+                    width: dp(1.5)
+            
+            # Welcome Message - Full width at the top
+            Label:
+                text: f'{root.first_name} CLC is home...'
+                font_size: sp(22)
+                bold: True
+                color: 1, 1, 1, 1  # White text
+                text_size: self.width, None
+                halign: 'center'
+                valign: 'middle'
+                size_hint_y: None
+                height: dp(35)
+            
+            # Logo and Subtitle - Sharing space below welcome message
+            BoxLayout:
+                orientation: 'horizontal'
+                spacing: dp(15)
+                size_hint_y: None
+                height: dp(60)
+                
+                # Logo on the left
+                BoxLayout:
+                    orientation: 'vertical'
+                    size_hint_x: 0.3  # 30% width
+                    
+                    Image:
+                        source: 'assets/logo.png'
+                        allow_stretch: True
+                        keep_ratio: True
+                        size_hint: None, None
+                        size: dp(60), dp(60)
+                        pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+                
+                # Subtitle on the right
+                BoxLayout:
+                    orientation: 'vertical'
+                    size_hint_x: 0.7  # 70% width
+                    padding: [dp(5), 0]
+                    
+                    Label:
+                        text: 'Welcome to your Christian community'
+                        font_size: sp(16)
+                        color: 0.949, 0.788, 0.298, 1  # Gold color
+                        text_size: self.width, None
+                        halign: 'left'
+                        valign: 'middle'
+                        bold: True
+        
+        # Main Content Area - With inspirational text
+        BoxLayout:
+            orientation: 'vertical'
+            padding: [dp(20), dp(20)]
+            size_hint_y: 1
+            
+            canvas.before:
+                # Semi-transparent dark background for content
+                Color:
+                    rgba: 0.1, 0.1, 0.1, 0.8  # Dark background with good opacity
+                RoundedRectangle:
+                    pos: self.pos
+                    size: self.size
+                    radius: [dp(15),]
+                # Border for the content area
+                Color:
+                    rgba: 0.949, 0.788, 0.298, 0.6  # Gold border
+                Line:
+                    rounded_rectangle: [self.x, self.y, self.width, self.height, dp(15)]
+                    width: dp(1.5)
+            
+            # Inspirational content matching your image
+            BoxLayout:
+                orientation: 'vertical'
+                spacing: dp(15)
+                padding: [dp(10), dp(10)]
+                
+                Label:
+                    text: 'CONTEMPLATIVE\nIN ACTION'
+                    font_size: sp(20)
+                    bold: True
+                    color: 0.949, 0.788, 0.298, 1  # Gold
+                    text_size: self.width, None
+                    halign: 'center'
+                    valign: 'middle'
+                
+                Label:
+                    text: 'FINDING GOD\nIN ALL THINGS'
+                    font_size: sp(18)
+                    bold: True
+                    color: 1, 1, 1, 1  # White
+                    text_size: self.width, None
+                    halign: 'center'
+                    valign: 'middle'
+                
+                Label:
+                    text: 'CORPORATIONS\nUNITY OF LIFE'
+                    font_size: sp(16)
+                    color: 0.8, 0.8, 0.8, 1  # Light gray
+                    text_size: self.width, None
+                    halign: 'center'
+                    valign: 'middle'
+                
+                Label:
+                    text: 'DISCERNMENT'
+                    font_size: sp(18)
+                    bold: True
+                    color: 0.949, 0.788, 0.298, 1  # Gold
+                    text_size: self.width, None
+                    halign: 'center'
+                    valign: 'middle'
+        
+       # Bottom Navigation Bar
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint_y: None
+            height: dp(60)
+            spacing: dp(8)
+            padding: [dp(8), dp(8)]
+            
+            # Semi-transparent background for navigation
+            canvas.before:
+                Color:
+                    rgba: 0.1, 0.1, 0.1, 0.9
+                RoundedRectangle:
+                    pos: self.pos
+                    size: self.size
+                    radius: [dp(20),]
+                Color:
+                    rgba: 0.949, 0.788, 0.298, 0.6
+                Line:
+                    rounded_rectangle: [self.x, self.y, self.width, self.height, dp(20)]
+                    width: dp(1.5)
+            
+            # About Button - FIXED
+            Button:
+                text: ''
+                size_hint_x: 1
+                background_color: 0, 0, 0, 0
+                background_normal: ''
+                on_press: root.navigate_to_about()
+                
+                BoxLayout:
+                    orientation: 'vertical'
+                    size_hint: None, None
+                    size: self.parent.size if self.parent else (0, 0)
+                    pos: self.parent.pos if self.parent else (0, 0)
+                    
+                    Label:
+                        text: '\uf05a'
+                        font_name: 'FontAwesomeSolid'
+                        font_size: sp(24)
+                        color: 1, 1, 1, 1
+                        size_hint_y: 1
+                        halign: 'center'
+                        valign: 'middle'
+            
+            # Chat Button - FIXED
+            Button:
+                text: ''
+                size_hint_x: 1
+                background_color: 0, 0, 0, 0
+                background_normal: ''
+                on_press: root.navigate_to_chats()
+                
+                BoxLayout:
+                    orientation: 'vertical'
+                    size_hint: None, None
+                    size: self.parent.size if self.parent else (0, 0)
+                    pos: self.parent.pos if self.parent else (0, 0)
+                    
+                    Label:
+                        text: '\uf086'
+                        font_name: 'FontAwesomeSolid'
+                        font_size: sp(24)
+                        color: 1, 1, 1, 1
+                        size_hint_y: 1
+                        halign: 'center'
+                        valign: 'middle'
+            
+            # Notifications Button - FIXED
+            Button:
+                text: ''
+                size_hint_x: 1
+                background_color: 0, 0, 0, 0
+                background_normal: ''
+                on_press: root.navigate_to_notifications()
+                
+                BoxLayout:
+                    orientation: 'vertical'
+                    size_hint: None, None
+                    size: self.parent.size if self.parent else (0, 0)
+                    pos: self.parent.pos if self.parent else (0, 0)
+                    
+                    Label:
+                        text: '\uf0f3'
+                        font_name: 'FontAwesomeSolid'
+                        font_size: sp(24)
+                        color: 1, 1, 1, 1
+                        size_hint_y: 1
+                        halign: 'center'
+                        valign: 'middle'
+            
+            # Settings Button - FIXED
+            Button:
+                text: ''
+                size_hint_x: 1
+                background_color: 0, 0, 0, 0
+                background_normal: ''
+                on_press: root.navigate_to_settings()
+                
+                BoxLayout:
+                    orientation: 'vertical'
+                    size_hint: None, None
+                    size: self.parent.size if self.parent else (0, 0)
+                    pos: self.parent.pos if self.parent else (0, 0)
+                    
+                    Label:
+                        text: '\uf013'
+                        font_name: 'FontAwesomeSolid'
+                        font_size: sp(24)
+                        color: 1, 1, 1, 1
+                        size_hint_y: 1
+                        halign: 'center'
+                        valign: 'middle'
+# About Screen
+<AboutScreen>:
+    name: 'about'
+    
+    canvas.before:
+        Color:
+            rgba: 0.08, 0.12, 0.18, 1
+        Rectangle:
+            pos: self.pos
+            size: self.size
+        Color:
+            rgba: 0.949, 0.788, 0.298, 0.05
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+    BoxLayout:
+        orientation: 'vertical'
+        padding: 0
+        spacing: 0
+        
+        # Header - FIXED
+        BoxLayout:
+            size_hint_y: None
+            height: dp(70)
+            padding: [dp(10), dp(15), dp(15), dp(10)]  # Reduced left padding
+            canvas.before:
+                Color:
+                    rgba: 0, 0, 0, 0.3
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+            
+            # Back Button - Fixed icon centering
+            Button:
+                size_hint: None, None
+                size: dp(45), dp(45)
+                background_color: 0, 0, 0, 0  # Uncommented this line
+                background_normal: ''
+                on_press: root.go_back()
+                canvas.before:
+                    Color:
+                        rgba: 0.949, 0.788, 0.298, 0.9
+                    RoundedRectangle:
+                        pos: self.pos
+                        size: self.size
+                        radius: [dp(8),]
+                
+                # Fixed: Added AnchorLayout to center the icon
+                AnchorLayout:
+                    anchor_x: 'center'
+                    anchor_y: 'center'
+                    Label:
+                        text: '\uf060'  # FontAwesome arrow-left
+                        font_name: 'FontAwesomeSolid'
+                        font_size: sp(20)
+                        color: 1, 1, 1, 1
+                        size_hint: None, None
+                        size: self.texture_size
+            
+            # Title - Properly centered
+            Label:
+                text: 'About CLC'
+                font_size: sp(26)
+                color: 1, 1, 1, 1
+                bold: True
+                halign: 'center'
+                valign: 'middle'
+                text_size: self.width, None
+            
+            # Spacer - Matches back button width for perfect centering
+            Widget:
+                size_hint_x: None
+                width: dp(45)
+
+        # Main Content
+        ScrollView:
+            do_scroll_x: False
+            effect_cls: "ScrollEffect"
+            
+            BoxLayout:
+                orientation: 'vertical'
+                size_hint_y: None
+                height: self.minimum_height
+                padding: [dp(25), dp(20), dp(25), dp(40)]
+                spacing: dp(30)
+                
+                # Hero Section
+                BoxLayout:
+                    id: hero_section
+                    orientation: 'vertical'
+                    size_hint_y: None
+                    height: dp(120)
+                    spacing: dp(8)
+                    
+                    canvas.before:
+                        Color:
+                            rgba: 0.949, 0.788, 0.298, 0.12
+                        RoundedRectangle:
+                            pos: self.pos
+                            size: self.size
+                            radius: [dp(15),]
+                    
+                    Label:
+                        text: 'Christian Life Community'
+                        font_size: sp(26)
+                        color: 0.949, 0.788, 0.298, 1
+                        bold: True
+                        halign: 'center'
+                        size_hint_y: None
+                        height: dp(40)
+                    
+                    Label:
+                        text: 'Ignatian Spirituality • Global Community • Apostolic Service'
+                        font_size: sp(14)
+                        color: 1, 1, 1, 0.9
+                        halign: 'center'
+                        size_hint_y: None
+                        height: dp(25)
+
+                # Mission Section
+                BoxLayout:
+                    id: mission_section
+                    orientation: 'vertical'
+                    size_hint_y: None
+                    height: self.minimum_height
+                    spacing: dp(15)
+                    
+                    Label:
+                        text: '🎯 Our Mission'
+                        font_size: sp(20)
+                        color: 0.949, 0.788, 0.298, 1
+                        bold: True
+                        size_hint_y: None
+                        height: dp(35)
+                        halign: 'left'
+                    
+                    BoxLayout:
+                        orientation: 'vertical'
+                        size_hint_y: None
+                        height: self.minimum_height
+                        padding: [dp(20), dp(18)]
+                        spacing: dp(8)
+                        
+                        canvas.before:
+                            Color:
+                                rgba: 0.12, 0.18, 0.25, 0.7
+                            RoundedRectangle:
+                                pos: self.pos
+                                size: self.size
+                                radius: [dp(12),]
+                            Color:
+                                rgba: 0.949, 0.788, 0.298, 0.3
+                            Line:
+                                width: dp(1)
+                                rounded_rectangle: [self.x, self.y, self.width, self.height, dp(12)]
+                        
+                        Label:
+                            text: 'Living the Gospel through service and action'
+                            font_size: sp(16)
+                            color: 1, 1, 1, 0.95
+                            text_size: self.width, None
+                            halign: 'center'
+                            size_hint_y: None
+                            height: self.texture_size[1]
+
+                # Vision Section
+                BoxLayout:
+                    id: vision_section
+                    orientation: 'vertical'
+                    size_hint_y: None
+                    height: self.minimum_height
+                    spacing: dp(15)
+                    
+                    Label:
+                        text: '🌟 Vision'
+                        font_size: sp(20)
+                        color: 0.949, 0.788, 0.298, 1
+                        bold: True
+                        size_hint_y: None
+                        height: dp(35)
+                        halign: 'left'
+                    
+                    BoxLayout:
+                        orientation: 'vertical'
+                        size_hint_y: None
+                        height: self.minimum_height
+                        padding: [dp(20), dp(18)]
+                        spacing: dp(8)
+                        
+                        canvas.before:
+                            Color:
+                                rgba: 0.12, 0.18, 0.25, 0.7
+                            RoundedRectangle:
+                                pos: self.pos
+                                size: self.size
+                                radius: [dp(12),]
+                            Color:
+                                rgba: 0.949, 0.788, 0.298, 0.3
+                            Line:
+                                width: dp(1)
+                                rounded_rectangle: [self.x, self.y, self.width, self.height, dp(12)]
+                        
+                        Label:
+                            text: 'A world transformed by discerning individuals committed to justice, love, and spiritual depth.'
+                            font_size: sp(16)
+                            color: 1, 1, 1, 0.95
+                            text_size: self.width, None
+                            halign: 'center'
+                            size_hint_y: None
+                            height: self.texture_size[1]
+
+                # Who We Are Section
+                BoxLayout:
+                    id: who_we_are_section
+                    orientation: 'vertical'
+                    size_hint_y: None
+                    height: self.minimum_height
+                    spacing: dp(15)
+                    
+                    Label:
+                        text: '🕊️ Who We Are'
+                        font_size: sp(20)
+                        color: 0.949, 0.788, 0.298, 1
+                        bold: True
+                        size_hint_y: None
+                        height: dp(35)
+                        halign: 'left'
+                    
+                    BoxLayout:
+                        orientation: 'vertical'
+                        size_hint_y: None
+                        height: self.minimum_height
+                        padding: [dp(20), dp(18)]
+                        spacing: dp(8)
+                        
+                        canvas.before:
+                            Color:
+                                rgba: 0.12, 0.18, 0.25, 0.7
+                            RoundedRectangle:
+                                pos: self.pos
+                                size: self.size
+                                radius: [dp(12),]
+                            Color:
+                                rgba: 0.949, 0.788, 0.298, 0.3
+                            Line:
+                                width: dp(1)
+                                rounded_rectangle: [self.x, self.y, self.width, self.height, dp(12)]
+                        
+                        BoxLayout:
+                            orientation: 'horizontal'
+                            size_hint_y: None
+                            height: dp(30)
+                            spacing: dp(10)
+                            
+                            Label:
+                                text: '•'
+                                font_size: sp(16)
+                                color: 0.949, 0.788, 0.298, 1
+                                size_hint_x: None
+                                width: dp(20)
+                                halign: 'center'
+                            
+                            Label:
+                                text: 'A global lay movement rooted in the Spiritual Exercises of St. Ignatius of Loyola'
+                                font_size: sp(14)
+                                color: 1, 1, 1, 0.9
+                                text_size: self.width, None
+                                halign: 'left'
+                                size_hint_y: None
+                                height: self.texture_size[1]
+                        
+                        BoxLayout:
+                            orientation: 'horizontal'
+                            size_hint_y: None
+                            height: dp(30)
+                            spacing: dp(10)
+                            
+                            Label:
+                                text: '•'
+                                font_size: sp(16)
+                                color: 0.949, 0.788, 0.298, 1
+                                size_hint_x: None
+                                width: dp(20)
+                                halign: 'center'
+                            
+                            Label:
+                                text: 'Present in over 60 countries, including vibrant communities across Kenya'
+                                font_size: sp(14)
+                                color: 1, 1, 1, 0.9
+                                text_size: self.width, None
+                                halign: 'left'
+                                size_hint_y: None
+                                height: self.texture_size[1]
+                        
+                        BoxLayout:
+                            orientation: 'horizontal'
+                            size_hint_y: None
+                            height: dp(30)
+                            spacing: dp(10)
+                            
+                            Label:
+                                text: '•'
+                                font_size: sp(16)
+                                color: 0.949, 0.788, 0.298, 1
+                                size_hint_x: None
+                                width: dp(20)
+                                halign: 'center'
+                            
+                            Label:
+                                text: 'Guided by Jesuit principles: Discernment, Magis, Cura Personalis, Contemplation in Action'
+                                font_size: sp(14)
+                                color: 1, 1, 1, 0.9
+                                text_size: self.width, None
+                                halign: 'left'
+                                size_hint_y: None
+                                height: self.texture_size[1]
+
+                # What We Do Section
+                BoxLayout:
+                    id: what_we_do_section
+                    orientation: 'vertical'
+                    size_hint_y: None
+                    height: self.minimum_height
+                    spacing: dp(15)
+                    
+                    Label:
+                        text: '🌍 What We Do'
+                        font_size: sp(20)
+                        color: 0.949, 0.788, 0.298, 1
+                        bold: True
+                        size_hint_y: None
+                        height: dp(35)
+                        halign: 'left'
+                    
+                    BoxLayout:
+                        orientation: 'vertical'
+                        size_hint_y: None
+                        height: self.minimum_height
+                        padding: [dp(20), dp(18)]
+                        spacing: dp(8)
+                        
+                        canvas.before:
+                            Color:
+                                rgba: 0.12, 0.18, 0.25, 0.7
+                            RoundedRectangle:
+                                pos: self.pos
+                                size: self.size
+                                radius: [dp(12),]
+                            Color:
+                                rgba: 0.949, 0.788, 0.298, 0.3
+                            Line:
+                                width: dp(1)
+                                rounded_rectangle: [self.x, self.y, self.width, self.height, dp(12)]
+                        
+                        BoxLayout:
+                            orientation: 'horizontal'
+                            size_hint_y: None
+                            height: dp(30)
+                            spacing: dp(10)
+                            
+                            Label:
+                                text: '•'
+                                font_size: sp(16)
+                                color: 0.949, 0.788, 0.298, 1
+                                size_hint_x: None
+                                width: dp(20)
+                                halign: 'center'
+                            
+                            Label:
+                                text: 'Form small, intentional groups for prayer, reflection, and mission'
+                                font_size: sp(14)
+                                color: 1, 1, 1, 0.9
+                                text_size: self.width, None
+                                halign: 'left'
+                                size_hint_y: None
+                                height: self.texture_size[1]
+                        
+                        BoxLayout:
+                            orientation: 'horizontal'
+                            size_hint_y: None
+                            height: dp(30)
+                            spacing: dp(10)
+                            
+                            Label:
+                                text: '•'
+                                font_size: sp(16)
+                                color: 0.949, 0.788, 0.298, 1
+                                size_hint_x: None
+                                width: dp(20)
+                                halign: 'center'
+                            
+                            Label:
+                                text: 'Engage in social justice, education, and pastoral outreach'
+                                font_size: sp(14)
+                                color: 1, 1, 1, 0.9
+                                text_size: self.width, None
+                                halign: 'left'
+                                size_hint_y: None
+                                height: self.texture_size[1]
+                        
+                        BoxLayout:
+                            orientation: 'horizontal'
+                            size_hint_y: None
+                            height: dp(30)
+                            spacing: dp(10)
+                            
+                            Label:
+                                text: '•'
+                                font_size: sp(16)
+                                color: 0.949, 0.788, 0.298, 1
+                                size_hint_x: None
+                                width: dp(20)
+                                halign: 'center'
+                            
+                            Label:
+                                text: 'Host national assemblies, retreats, and formation programs'
+                                font_size: sp(14)
+                                color: 1, 1, 1, 0.9
+                                text_size: self.width, None
+                                halign: 'left'
+                                size_hint_y: None
+
+#:kivy 2.3.0
+
+<AdminSettingsScreen>:
+    name: 'admin_settings'
+    
+    Image:
+        source: 'assets/background.jpeg'
+        allow_stretch: True
+        keep_ratio: False
+        pos: self.pos
+        size: self.size
+
+    ScrollView:
+        do_scroll_x: False
+        do_scroll_y: True
+        effect_cls: "ScrollEffect"
+        
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint_y: None
+            height: self.minimum_height
+            padding: [dp(20), dp(20), dp(20), dp(30)]
+            spacing: dp(25)
+            
+            # Header Section
+            BoxLayout:
+                orientation: 'vertical'
+                size_hint_y: None
+                height: dp(120)
+                spacing: dp(10)
+                padding: [dp(15), dp(10)]
+                
+                canvas.before:
+                    Color:
+                        rgba: 0.1, 0.1, 0.1, 0.85
+                    RoundedRectangle:
+                        pos: self.pos
+                        size: self.size
+                        radius: [dp(20),]
+                    Color:
+                        rgba: 0.949, 0.788, 0.298, 0.6
+                    Line:
+                        rounded_rectangle: [self.x, self.y, self.width, self.height, dp(20)]
+                        width: dp(1.5)
+                
+                Label:
+                    text: 'Admin Settings & Account'
+                    font_size: sp(22)
+                    bold: True
+                    color: 1, 1, 1, 1
+                    halign: 'center'
+                    valign: 'middle'
+                    size_hint_y: None
+                    height: dp(35)
+                
+                Label:
+                    text: 'Manage all user accounts and privileges'
+                    font_size: sp(16)
+                    color: 0.949, 0.788, 0.298, 1
+                    halign: 'center'
+
+            # Current User Info
+            BoxLayout:
+                orientation: 'vertical'
+                size_hint_y: None
+                height: dp(150)
+                padding: [dp(20), dp(15)]
+                spacing: dp(10)
+                
+                canvas.before:
+                    Color:
+                        rgba: 0.1, 0.1, 0.1, 0.8
+                    RoundedRectangle:
+                        pos: self.pos
+                        size: self.size
+                        radius: [dp(15),]
+                    Color:
+                        rgba: 0.949, 0.788, 0.298, 0.6
+                    Line:
+                        rounded_rectangle: [self.x, self.y, self.width, self.height, dp(15)]
+                        width: dp(1.5)
+                
+                Label:
+                    text: 'Your Account'
+                    font_size: sp(18)
+                    bold: True
+                    color: 0.949, 0.788, 0.298, 1
+                
+                Label:
+                    id: current_user_info
+                    text: 'Loading admin details...'
+                    font_size: sp(14)
+                    color: 1, 1, 1, 0.9
+
+            # Admin Panel
+            BoxLayout:
+                orientation: 'vertical'
+                size_hint_y: None
+                height: dp(300)
+                padding: [dp(20), dp(15)]
+                spacing: dp(10)
+                
+                canvas.before:
+                    Color:
+                        rgba: 0.1, 0.1, 0.1, 0.8
+                    RoundedRectangle:
+                        pos: self.pos
+                        size: self.size
+                        radius: [dp(15),]
+                    Color:
+                        rgba: 0.918, 0.702, 0.031, 0.6
+                    Line:
+                        rounded_rectangle: [self.x, self.y, self.width, self.height, dp(15)]
+                        width: dp(1.5)
+                
+                Label:
+                    text: '👑 Admin Panel - Manage Users'
+                    font_size: sp(18)
+                    bold: True
+                    color: 0.918, 0.702, 0.031, 1
+                    halign: 'center'
+                    size_hint_y: None
+                    height: dp(30)
+                
+                ScrollView:
+                    size_hint_y: None
+                    height: dp(180)
+                    do_scroll_x: False
+                    
+                    BoxLayout:
+                        id: users_list
+                        orientation: 'vertical'
+                        size_hint_y: None
+                        height: self.minimum_height
+                        spacing: dp(5)
+                        padding: [dp(5), dp(5)]
+                
+                BoxLayout:
+                    spacing: dp(10)
+                    size_hint_y: None
+                    height: dp(45)
+                    
+                    Button:
+                        text: "Promote to Admin"
+                        background_color: 0.145, 0.388, 0.922, 1
+                        color: 1, 1, 1, 1
+                        on_press: root.promote_selected_user()
+
+                    Button:
+                        text: "Demote Admin"
+                        background_color: 0.8, 0.2, 0.2, 1
+                        color: 1, 1, 1, 1
+                        on_press: root.demote_selected_user()
+
+            # Logout / Back
+            BoxLayout:
+                orientation: 'vertical'
+                size_hint_y: None
+                height: dp(130)
+                spacing: dp(10)
+                
+                Button:
+                    text: '🚪 Logout'
+                    font_size: sp(18)
+                    bold: True
+                    size_hint_y: None
+                    height: dp(50)
+                    background_color: 0.8, 0.2, 0.2, 1
+                    color: 1, 1, 1, 1
+                    on_press: root.logout_user()
+                
+                Button:
+                    text: '⬅️ Back to Dashboard'
+                    font_size: sp(16)
+                    size_hint_y: None
+                    height: dp(40)
+                    background_color: 0.3, 0.3, 0.3, 1
+                    color: 1, 1, 1, 1
+                    on_press: root.go_back_to_dashboard()
+
+
+<UserSettingsScreen>:
+    name: 'user_settings'
+    
+    Image:
+        source: 'assets/background.jpeg'
+        allow_stretch: True
+        keep_ratio: False
+        pos: self.pos
+        size: self.size
+
+    ScrollView:
+        do_scroll_x: False
+        do_scroll_y: True
+        effect_cls: "ScrollEffect"
+        
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint_y: None
+            height: self.minimum_height
+            padding: [dp(20), dp(20), dp(20), dp(30)]
+            spacing: dp(25)
+            
+            BoxLayout:
+                orientation: 'vertical'
+                size_hint_y: None
+                height: dp(120)
+                spacing: dp(10)
+                padding: [dp(15), dp(10)]
+                
+                canvas.before:
+                    Color:
+                        rgba: 0.1, 0.1, 0.1, 0.85
+                    RoundedRectangle:
+                        pos: self.pos
+                        size: self.size
+                        radius: [dp(20),]
+                    Color:
+                        rgba: 0.949, 0.788, 0.298, 0.6
+                    Line:
+                        rounded_rectangle: [self.x, self.y, self.width, self.height, dp(20)]
+                        width: dp(1.5)
+                
+                Label:
+                    text: 'User Settings & Account'
+                    font_size: sp(22)
+                    bold: True
+                    color: 1, 1, 1, 1
+                    halign: 'center'
+                    valign: 'middle'
+
+            BoxLayout:
+                orientation: 'vertical'
+                size_hint_y: None
+                height: dp(150)
+                padding: [dp(20), dp(15)]
+                spacing: dp(10)
+                
+                canvas.before:
+                    Color:
+                        rgba: 0.1, 0.1, 0.1, 0.8
+                    RoundedRectangle:
+                        pos: self.pos
+                        size: self.size
+                        radius: [dp(15),]
+                    Color:
+                        rgba: 0.949, 0.788, 0.298, 0.6
+                    Line:
+                        rounded_rectangle: [self.x, self.y, self.width, self.height, dp(15)]
+                        width: dp(1.5)
+                
+                Label:
+                    text: 'Your Account'
+                    font_size: sp(18)
+                    bold: True
+                    color: 0.949, 0.788, 0.298, 1
+                
+                Label:
+                    id: current_user_info_user
+                    text: 'Loading user information...'
+                    font_size: sp(14)
+                    color: 1, 1, 1, 0.9
+
+            # Logout & Back
+            BoxLayout:
+                orientation: 'vertical'
+                size_hint_y: None
+                height: dp(130)
+                spacing: dp(10)
+                
+                Button:
+                    text: '🚪 Logout'
+                    font_size: sp(18)
+                    bold: True
+                    size_hint_y: None
+                    height: dp(50)
+                    background_color: 0.8, 0.2, 0.2, 1
+                    color: 1, 1, 1, 1
+                    on_press: root.logout_user()
+                
+                Button:
+                    text: '⬅️ Back to Dashboard'
+                    font_size: sp(16)
+                    size_hint_y: None
+                    height: dp(40)
+                    background_color: 0.3, 0.3, 0.3, 1
+                    color: 1, 1, 1, 1
+                    on_press: root.go_back_to_dashboard()
+
+#:import dp kivy.metrics.dp
+#:import sp kivy.metrics.sp
+#:import Window kivy.core.window.Window
+
+# ======================================================
+# 🌤 UNIVERSAL SETTINGS (light theme)
+# ======================================================
+<FAIcon@Label>:
+    font_name: 'FontAwesomeSolid'
+    font_size: sp(20)
+    halign: 'center'
+    valign: 'middle'
+    color: 0, 0, 0, 1  # black icons
+    size_hint: None, None
+    size: dp(36), dp(36)
+
+# ======================================================
+# 👑 ADMIN CHAT SCREEN
+# ======================================================
+<AdminChatScreen>:
+    name: 'admin_chat'
+    canvas.before:
+        Color:
+            rgba: 0.98, 0.97, 0.94, 1  # light cream background
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+    BoxLayout:
+        orientation: 'vertical'
+        spacing: dp(6)
+
+        # ===== PINNED USERS BAR =====
+        BoxLayout:
+            id: pinned_bar
+            size_hint_y: None
+            height: dp(80)
+            padding: dp(10)
+            spacing: dp(10)
+            canvas.before:
+                Color:
+                    rgba: 1, 0.4, 0.2, 0.1  # faint orange-red band
+                RoundedRectangle:
+                    pos: self.pos
+                    size: self.size
+                    radius: [dp(10),]
+
+            ScrollView:
+                do_scroll_y: False
+                do_scroll_x: True
+                bar_width: 0
+                GridLayout:
+                    id: pinned_container
+                    cols: 1
+                    size_hint_x: None
+                    width: self.minimum_width
+                    spacing: dp(8)
+                    height: self.minimum_height
+
+        # ===== MESSAGES AREA =====
+        ScrollView:
+            id: scroll_view
+            bar_width: dp(6)
+            do_scroll_x: False
+
+            GridLayout:
+                id: message_container
+                cols: 1
+                size_hint_y: None
+                height: self.minimum_height
+                padding: dp(10)
+                spacing: dp(12)
+
+        # ===== INPUT BAR (final) =====
+        BoxLayout:
+            id: input_bar
+            size_hint_y: None
+            height: dp(68)
+            padding: [dp(10), dp(8)]
+            spacing: dp(8)
+            canvas.before:
+                Color:
+                    rgba: 1, 0.95, 0.88, 1  # light cream
+                RoundedRectangle:
+                    pos: self.pos
+                    size: self.size
+                    radius: [dp(14), dp(14), 0, 0]
+                Color:
+                    rgba: 1, 0.3, 0.1, 1  # orange-red border
+                Line:
+                    width: 1.2
+                    rounded_rectangle: (*self.pos, *self.size, dp(14), dp(14), 0, 0)
+        
+            # Emoji Button
+            Button:
+                id: emoji_btn
+                size_hint_x: None
+                width: dp(45)
+                background_normal: ''
+                background_down: ''
+                background_color: 0, 0, 0, 0
+                on_press: root.open_emoji_picker()
+                BoxLayout:
+                    size: self.parent.size
+                    padding: dp(4)
+                    Label:
+                        text: '\uf118'  # smiley
+                        font_name: 'FontAwesomeSolid'
+                        color: 0, 0, 0, 1
+                        font_size: sp(22)
+                        halign: 'center'
+                        valign: 'middle'
+                        text_size: self.size
+        
+            # Message Input
+            TextInput:
+                id: message_input
+                size_hint_x: 0.75
+                hint_text: 'Type a message...'
+                hint_text_color: 0.3, 0.3, 0.3, 1
+                foreground_color: 0, 0, 0, 1
+                background_color: 0.9, 1, 0.9, 0.6
+                cursor_color: 0, 0, 0, 1
+                font_size: sp(17)
+                padding: [dp(12), dp(10)]
+                multiline: True
+                on_text_validate: root.send_message()
+        
+            # Attachment Button
+            Button:
+                id: attach_btn
+                size_hint_x: None
+                width: dp(45)
+                background_normal: ''
+                background_down: ''
+                background_color: 0, 0, 0, 0
+                on_press: root.open_attachment_picker()
+                BoxLayout:
+                    size: self.parent.size
+                    padding: dp(4)
+                    Label:
+                        text: '\uf0c6'  # paperclip
+                        font_name: 'FontAwesomeSolid'
+                        color: 0, 0, 0, 1
+                        font_size: sp(22)
+                        halign: 'center'
+                        valign: 'middle'
+                        text_size: self.size
+        
+            # Send Button
+            Button:
+                id: send_btn
+                size_hint_x: None
+                width: dp(56)
+                background_normal: ''
+                background_down: ''
+                background_color: 1, 0.3, 0.1, 1
+                on_release: root.send_message()
+                canvas.before:
+                    Color:
+                        rgba: 1, 0.3, 0.1, 1
+                    RoundedRectangle:
+                        pos: self.pos
+                        size: self.size
+                        radius: [dp(12), dp(12), dp(12), dp(12)]
+                BoxLayout:
+                    size: self.parent.size
+                    padding: dp(4)
+                    Label:
+                        text: '\uf1d8'  # send icon
+                        font_name: 'FontAwesomeSolid'
+                        color: 0, 0, 0, 1
+                        font_size: sp(22)
+                        halign: 'center'
+                        valign: 'middle'
+                        text_size: self.size
+
+
+# ======================================================
+# 🟩 ADMIN MESSAGE CARD
+# ======================================================
+<AdminMessageCard@BoxLayout>:
+    orientation: 'vertical'
+    size_hint_y: None
+    height: self.minimum_height
+    padding: dp(10)
+    spacing: dp(8)
+    message_type: 'text'
+    content_text: ''
+    media_path: ''
+    media_name: ''
+    timestamp: ''
+    status: 'sent'
+    canvas.before:
+        Color:
+            rgba: 0.7, 1, 0.7, 0.6  # translucent light-green card
+        RoundedRectangle:
+            pos: self.pos
+            size: self.size
+            radius: [dp(12),]
+        Color:
+            rgba: 1, 0.4, 0.2, 1  # orange-red border
+        Line:
+            rounded_rectangle: [self.x, self.y, self.width, self.height, dp(12)]
+            width: 1.2
+
+    Label:
+        text: root.content_text if root.message_type == 'text' else ''
+        color: 0, 0, 0, 1
+        font_size: sp(16)
+        text_size: self.width, None
+        halign: 'left'
+        valign: 'middle'
+        size_hint_y: None
+        height: self.texture_size[1] + dp(8)
+
+    AsyncImage:
+        source: root.media_path if root.message_type == 'image' else ''
+        size_hint_y: None
+        height: dp(180) if root.message_type == 'image' else 0
+        allow_stretch: True
+        keep_ratio: True
+        on_touch_down:
+            if self.collide_point(*args[1].pos): root.open_media_viewer(root.message_id)
+
+    Label:
+        text: root.timestamp
+        font_size: sp(12)
+        color: 0.2, 0.2, 0.2, 1
+        halign: 'right'
+        size_hint_y: None
+        height: dp(20)
+
+
+# ======================================================
+# 👥 USER CHAT SCREEN
+# ======================================================
+<UserChatScreen>:
+    name: "user_chat"
+    canvas.before:
+        Color:
+            rgba: 0.98, 0.97, 0.94, 1
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+    BoxLayout:
+        orientation: "vertical"
+        spacing: dp(6)
+
+        # ===== PINNED MESSAGES BAR =====
+        ScrollView:
+            size_hint_y: None
+            height: dp(80)
+            do_scroll_x: True
+            bar_width: 0
+
+            BoxLayout:
+                id: pinned_strip
+                orientation: "horizontal"
+                size_hint_x: None
+                width: self.minimum_width
+                spacing: dp(10)
+                padding: dp(8)
+
+        # ===== MESSAGES AREA =====
+        ScrollView:
+            id: scroll_view
+            do_scroll_x: False
+            do_scroll_y: True
+
+            BoxLayout:
+                id: message_container
+                orientation: "vertical"
+                size_hint_y: None
+                height: self.minimum_height
+                spacing: dp(10)
+                padding: dp(10)
+
+        # ===== LOGOUT BUTTON =====
+        Button:
+            text: "Logout"
+            size_hint_y: None
+            height: dp(56)
+            font_size: sp(16)
+            background_normal: ''
+            background_color: 1, 0.4, 0.2, 1
+            color: 1, 1, 1, 1
+            on_release: root.logout_user()
+
+
+# ======================================================
+# 🟩 USER MESSAGE CARD
+# ======================================================
+<UserMessageCard@BoxLayout>:
+    orientation: "vertical"
+    size_hint_y: None
+    height: self.minimum_height
+    padding: dp(10)
+    spacing: dp(6)
+    message_type: "text"
+    content: ""
+    sender_name: ""
+    timestamp: ""
+    media_path: None
+    media_name: None
+
+    canvas.before:
+        Color:
+            rgba: 0.7, 1, 0.7, 0.6
+        RoundedRectangle:
+            pos: self.pos
+            size: self.size
+            radius: [dp(12),]
+        Color:
+            rgba: 1, 0.4, 0.2, 1
+        Line:
+            rounded_rectangle: [self.x, self.y, self.width, self.height, dp(12)]
+            width: 1.1
+
+    Label:
+        text: root.sender_name
+        font_size: sp(14)
+        color: 0, 0, 0, 1
+        size_hint_y: None
+        height: self.texture_size[1] + dp(4)
+
+    Label:
+        text: root.content if root.message_type == "text" else ""
+        color: 0, 0, 0, 1
+        font_size: sp(16)
+        text_size: self.width, None
+        halign: "left"
+        size_hint_y: None
+        height: self.texture_size[1] + dp(8)
+
+    AsyncImage:
+        source: root.media_path if root.message_type == "image" else ""
+        allow_stretch: True
+        keep_ratio: True
+        size_hint_y: None
+        height: dp(180) if root.message_type == "image" else 0
+        on_touch_down:
+            if self.collide_point(*args[1].pos): app.root.open_fullscreen_media(root.media_path)
+
+    Label:
+        text: root.timestamp
+        size_hint_y: None
+        height: dp(18)
+        font_size: sp(12)
+        color: 0.3, 0.3, 0.3, 1
+        halign: "right"
