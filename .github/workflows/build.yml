@@ -35,10 +35,14 @@ jobs:
         shell: bash
         working-directory: ./app
         run: |
-          echo "📦 Initializing Buildozer environment..."
+          echo "📦 Preparing Buildozer environment..."
           mkdir -p .buildozer
-          buildozer init
-          echo "✅ Environment ready."
+          if [ ! -f buildozer.spec ]; then
+            echo "🧾 No buildozer.spec found, creating one..."
+            buildozer init
+          else
+            echo "✅ buildozer.spec already exists, skipping init."
+          fi
 
       - name: 🤖 Build APK with Buildozer
         shell: bash
