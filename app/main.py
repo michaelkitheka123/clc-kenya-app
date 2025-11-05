@@ -1,54 +1,65 @@
 
-import kivy
+# ===============================================
+# ✅ Imports and environment setup
+# ===============================================
+
+import os
+import re
+import math
+import json
 import time
+import hashlib
+import secrets
+import sqlite3
+import asyncio
+import smtplib
+from datetime import datetime, timedelta
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+
+# ===============================================
+# ✅ Kivy imports
+# ===============================================
+from kivy.config import Config
+Config.set('graphics', 'multisamples', '0')  # Prevent black screen on some GPUs
+Config.set('kivy', 'exit_on_escape', '0')    # Prevent accidental exit on Android back
+Config.set('graphics', 'resizable', '1')     # Allow dynamic resizing (important for mobile)
+
+import kivy
+kivy.require('2.3.1')  # Match your local version
+
 from kivy.app import App
+from kivy.lang import Builder
+from kivy.clock import Clock
+from kivy.metrics import dp, sp
+from kivy.core.text import LabelBase
+from kivy.core.window import Window
+from kivy.graphics import Color, RoundedRectangle, Line, Rectangle
+from kivy.animation import Animation
+from kivy.properties import (
+    StringProperty,
+    ListProperty,
+    BooleanProperty,
+    NumericProperty
+)
+from kivy.uix.widget import Widget
 from kivy.uix.image import Image
-from kivy.uix.screenmanager import ScreenManager, Screen
-from kivy.uix.textinput import TextInput
-from kivy.uix.spinner import Spinner, SpinnerOption
 from kivy.uix.label import Label
 from kivy.uix.button import Button
+from kivy.uix.textinput import TextInput
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.scrollview import ScrollView
-from kivy.properties import BooleanProperty, StringProperty, NumericProperty
-from kivy.clock import Clock
-from kivy.core.window import Window
-from kivy.graphics import Color, RoundedRectangle, Line, Rectangle 
-from kivy.animation import Animation
-from kivy.metrics import dp
-from kivy.metrics import sp
-from kivy.uix.widget import Widget
-import re
-import sqlite3
-from datetime import datetime, timedelta
-import smtplib
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
-import hashlib
-import secrets
-import json
-import math
-from kivy.core.text import LabelBase
-from kivy.app import App
-import os
-from kivy.properties import StringProperty, ListProperty
-from kivy.uix.boxlayout import BoxLayout
-import asyncio  # ADD THIS IMPORT
 from kivy.uix.behaviors import ButtonBehavior
+from kivy.uix.spinner import Spinner, SpinnerOption
+from kivy.uix.screenmanager import ScreenManager, Screen
 
-# Add these custom widget classes before your AboutScreen class
-
-import os
-from kivy.core.text import LabelBase
-
-# Get the absolute path to the current folder (where this file is)
+# ===============================================
+# ✅ Font registration
+# ===============================================
 current_dir = os.path.dirname(os.path.abspath(__file__))
-
-# Path to your fonts folder
 fonts_dir = os.path.join(current_dir, 'fonts', 'otfs')
 
-# Register Font Awesome fonts with readable names
 LabelBase.register(
     name='FontAwesomeSolid',
     fn_regular=os.path.join(fonts_dir, 'Font Awesome 7 Free-Solid-900.otf')
@@ -64,24 +75,26 @@ LabelBase.register(
     fn_regular=os.path.join(fonts_dir, 'Font Awesome 7 Brands-Regular-400.otf')
 )
 
-print("Font Awesome fonts registered successfully!")
+print("✅ Font Awesome fonts registered successfully!")
 
-
-# Import the KV file
-from kivy.lang import Builder
+# ===============================================
+# ✅ Load the main KV layout
+# ===============================================
 Builder.load_file('ui.kv')
 
-# OTP Configuration
+# ===============================================
+# ✅ OTP Configuration
+# ===============================================
 class OTPConfig:
     OTP_LENGTH = 6
     OTP_EXPIRY_MINUTES = 10
     OTP_RESEND_COOLDOWN = 60
-    
+
     SMTP_SERVER = "smtp.gmail.com"
     SMTP_PORT = 587
     EMAIL_SENDER = "michael.mutemi16@gmail.com"
     EMAIL_PASSWORD = "pcbylmtgeaetcoto"
-    
+
     MAX_ATTEMPTS_PER_OTP = 3
     MAX_OTP_REQUESTS_PER_HOUR = 5
 
@@ -3060,34 +3073,34 @@ class LoginScreen(Screen):
 
 
 
-            def navigate_to_dashboard(self, user_name):
-                """Navigate to user dashboard with user's first name"""
-                try:
-                    dashboard_screen = self.manager.get_screen('user_dashboard')
+    def navigate_to_dashboard(self, user_name):
+        """Navigate to user dashboard with user's first name"""
+        try:
+            dashboard_screen = self.manager.get_screen('user_dashboard')
 
-                    # Extract first name from full name
-                    if user_name:
-                        first_name = user_name.split()[0]  # Get first name
-                        dashboard_screen.first_name = first_name
-                        print(f"Setting dashboard first name to: {first_name}")
+            # Extract first name from full name
+            if user_name:
+                first_name = user_name.split()[0]  # Get first name
+                dashboard_screen.first_name = first_name
+                print(f"Setting dashboard first name to: {first_name}")
 
-                    self.manager.current = 'user_dashboard'
-                    print("Navigated to user dashboard")
+            self.manager.current = 'user_dashboard'
+            print("Navigated to user dashboard")
 
-                except Exception as e:
-                    print(f"Dashboard navigation error: {e}")
+        except Exception as e:
+            print(f"Dashboard navigation error: {e}")
 
-            def navigate_to_forgot_password(self):
-                try:
-                    self.manager.current = 'forgot_password'
-                except Exception as e:
-                    print(f"Navigation error: {e}")
+    def navigate_to_forgot_password(self):
+        try:
+            self.manager.current = 'forgot_password'
+        except Exception as e:
+            print(f"Navigation error: {e}")
 
-            def navigate_to_registration(self):
-                try:
-                    self.manager.current = 'registration'
-                except Exception as e:
-                    print(f"Navigation error: {e}")
+    def navigate_to_registration(self):
+        try:
+            self.manager.current = 'registration'
+        except Exception as e:
+            print(f"Navigation error: {e}")
 
 class ForgotPasswordScreen(Screen):
     def __init__(self, **kwargs):
@@ -3700,7 +3713,7 @@ class KrakenApp(App):
     
     def build(self):
         self.title = "CLC Kenya App"
-        Window.size = (400, 700)
+        #Window.size = (400, 700)
         
         # Initialize AppWrite backend
         try:

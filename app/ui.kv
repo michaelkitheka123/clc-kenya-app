@@ -748,6 +748,7 @@
     ScrollView:
         do_scroll_x: False
         do_scroll_y: True
+        #padding: [0, dp(1000), 0, 0]  # [left, top, right, bottom]
         
         BoxLayout:
             orientation: 'vertical'
@@ -844,7 +845,7 @@
                     size_hint_y: None
                     height: dp(85)
                     spacing: dp(8)
-                    
+
                     Label:
                         text: 'Email Address'
                         font_size: sp(14)
@@ -854,23 +855,25 @@
                         text_size: self.width, None
                         halign: 'left'
                         bold: True
-                    
+
                     ModernInputField:
                         id: email_input
                         hint_text: 'Enter your email'
                         on_text: root.validate_email()
-                    
+                        cursor_color: 0.949, 0.788, 0.298, 1  # gold cursor
+                        cursor_width: dp(2)
+
                     ErrorLabel:
                         id: email_error
                         text: ''
-                
+
                 # Password Field
                 BoxLayout:
                     orientation: 'vertical'
                     size_hint_y: None
                     height: dp(85)
                     spacing: dp(8)
-                    
+
                     Label:
                         text: 'Password'
                         font_size: sp(14)
@@ -880,16 +883,37 @@
                         text_size: self.width, None
                         halign: 'left'
                         bold: True
-                    
-                    ModernInputField:
-                        id: password_input
-                        hint_text: 'Enter your password'
-                        password: True
-                        on_text: root.validate_password()
-                    
+
+                    # Input + eye icon row
+                    BoxLayout:
+                        orientation: 'horizontal'
+                        spacing: dp(8)
+                        size_hint_y: None
+                        height: dp(50)
+
+                        ModernInputField:
+                            id: password_input
+                            hint_text: 'Enter your password'
+                            password: True
+                            on_text: root.validate_password()
+                            cursor_color: 0.949, 0.788, 0.298, 1  # gold cursor
+                            cursor_width: dp(2)
+
+                        Button:
+                            text: '\uf06e' if password_input.password else '\uf070'  # FontAwesome eye/eye-slash
+                            font_name: 'FontAwesomeSolid'
+                            font_size: sp(18)
+                            background_normal: ''
+                            background_color: 0, 0, 0, 0
+                            color: 0.949, 0.788, 0.298, 1
+                            size_hint_x: None
+                            width: dp(40)
+                            on_press: password_input.password = not password_input.password
+
                     ErrorLabel:
                         id: password_error
                         text: ''
+
                 
                 # Login Button
                 Button:
