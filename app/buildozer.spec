@@ -14,7 +14,7 @@ source.include_exts = py,png,jpg,jpeg,kv,atlas,ttf,otf,json,db
 # App Requirements
 # ---------------------------------------------------
 # Core + Networking + AppWrite SDK + Email + SQLite
-requirements = python3,kivy==2.3.1,openssl,requests,urllib3,certifi,chardet,idna,sqlite3,appwrite
+requirements = python3==3.11,kivy==2.2.1,openssl,requests,urllib3,certifi,chardet,idna,sqlite3,appwrite
 
 # ---------------------------------------------------
 # Android Settings
