@@ -30,17 +30,21 @@ orientation = portrait
 # Permissions
 # ---------------------------------------------------
 android.permissions = INTERNET,ACCESS_NETWORK_STATE,WRITE_EXTERNAL_STORAGE,READ_EXTERNAL_STORAGE
-
 # ---------------------------------------------------
 # App Identity & Branding
 # ---------------------------------------------------
 version = 0.1
 icon.filename = assets/logo.png
+
+# Presplash / splashscreen settings
 presplash.filename = assets/presplash.png
-presplash.keep_ratio = False        
-presplash.scale = 1.0
+presplash.keep_ratio = True          
+presplash.scale = 0.5                
 presplash.background_color = #0b1524
-fullscreen = 1                      
+
+# Fullscreen
+fullscreen = auto                   
+                
 
 # ---------------------------------------------------
 # Logging & Debug
