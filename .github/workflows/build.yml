@@ -20,23 +20,23 @@ jobs:
         with:
           python-version: "3.10"
 
-      - name: 📦 Install system dependencies
+      - name: Install dependencies
         run: |
           sudo apt update
           sudo apt install -y \
             build-essential autoconf automake libtool pkg-config \
             libffi-dev git openjdk-17-jdk zlib1g-dev libncurses5-dev \
-            libtinfo6 unzip libssl-dev
+            libtinfo6 unzip libssl-dev libltdl-dev m4
           pip install --upgrade pip
           pip install buildozer cython virtualenv
-
-      - name: 🤖 Build APK with Buildozer
-        working-directory: ./app
-        env:
-          BUILDOZER_WARN_ON_ROOT: 0
-        run: |
-          echo "🏗️ Building debug APK..."
-          buildozer android debug --verbose
+      
+            - name: 🤖 Build APK with Buildozer
+              working-directory: ./app
+              env:
+                BUILDOZER_WARN_ON_ROOT: 0
+              run: |
+                echo "🏗️ Building debug APK..."
+                buildozer android debug --verbose
 
       - name: 📤 Upload built APK
         uses: actions/upload-artifact@v4
