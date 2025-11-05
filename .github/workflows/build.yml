@@ -37,6 +37,7 @@ jobs:
           ANDROIDSDK: ${{ github.workspace }}/.buildozer/android/platform/android-sdk
           ANDROIDNDK: ${{ github.workspace }}/.buildozer/android/platform/android-ndk-r25b
           PATH: ${{ github.workspace }}/.buildozer/android/platform/apache-ant-1.9.4/bin:$PATH
+        shell: bash
         run: |
           echo "🏗️ Building debug APK..."
           mkdir -p .buildozer
