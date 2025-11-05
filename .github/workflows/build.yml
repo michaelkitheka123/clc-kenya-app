@@ -31,15 +31,22 @@ jobs:
           pip install --upgrade pip
           pip install buildozer cython virtualenv
 
+      - name: ⚙️ Prepare Buildozer environment
+        shell: bash
+        working-directory: ./app
+        run: |
+          echo "📦 Initializing Buildozer environment..."
+          mkdir -p .buildozer
+          buildozer init
+          echo "✅ Environment ready."
+
       - name: 🤖 Build APK with Buildozer
-        shell: /bin/bash -e {0}
+        shell: bash
         working-directory: ./app
         env:
           BUILDOZER_WARN_ON_ROOT: 0
         run: |
           echo "🏗️ Building debug APK..."
-          mkdir -p .buildozer
-          buildozer android clean
           buildozer android debug --verbose
 
       - name: 📤 Upload built APK
