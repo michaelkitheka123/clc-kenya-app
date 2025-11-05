@@ -18,10 +18,9 @@ jobs:
       - name: 🐍 Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.10"
+          python-version: "3.8"
 
       - name: 🧩 Install dependencies
-        shell: bash
         run: |
           sudo apt update
           sudo apt install -y \
@@ -29,10 +28,9 @@ jobs:
             libffi-dev git openjdk-17-jdk zlib1g-dev libncurses5-dev \
             libtinfo6 unzip libssl-dev libltdl-dev m4
           pip install --upgrade pip
-          pip install buildozer cython virtualenv
+          pip install buildozer==1.4.0 cython==0.29.36 virtualenv
 
       - name: ⚙️ Prepare Buildozer environment
-        shell: bash
         working-directory: ./app
         run: |
           echo "📦 Preparing Buildozer environment..."
@@ -45,13 +43,12 @@ jobs:
           fi
 
       - name: 🤖 Build APK with Buildozer
-        shell: bash
         working-directory: ./app
         env:
           BUILDOZER_WARN_ON_ROOT: 0
         run: |
           echo "🏗️ Building debug APK..."
-          buildozer android debug --verbose
+          buildozer android debug --verbose || (echo "❌ Build failed" && exit 1)
 
       - name: 📤 Upload built APK
         uses: actions/upload-artifact@v4
