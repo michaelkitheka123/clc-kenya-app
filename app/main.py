@@ -39,23 +39,33 @@ from kivy.uix.behaviors import ButtonBehavior
 
 # Add these custom widget classes before your AboutScreen class
 
-# Get the absolute path to the font file
-current_dir = os.path.dirname(os.path.abspath(__file__))
-font_path = os.path.join(current_dir, 'fonts', 'otfs', 'Font Awesome 7 Free-Solid-900.otf')
-LabelBase.register(name='fa-solid-900.ttf', fn_regular=font_path)  # ADD THIS LINE
-print("Font registered successfully with both names!")
-print(f"Looking for font at: {font_path}")  # Debug print
+import os
+from kivy.core.text import LabelBase
 
-# Check if file exists
-if os.path.exists(font_path):
-    LabelBase.register(name='FontAwesomeSolid', fn_regular=font_path)
-    print("Font registered successfully!")
-else:
-    print(f"Font file not found at: {font_path}")
-    # List what's actually in the directory
-    fonts_dir = os.path.join(current_dir, 'fonts', 'otfs')
-    if os.path.exists(fonts_dir):
-        print("Files in fonts/otfs:", os.listdir(fonts_dir))
+# Get the absolute path to the current folder (where this file is)
+current_dir = os.path.dirname(os.path.abspath(__file__))
+
+# Path to your fonts folder
+fonts_dir = os.path.join(current_dir, 'fonts', 'otfs')
+
+# Register Font Awesome fonts with readable names
+LabelBase.register(
+    name='FontAwesomeSolid',
+    fn_regular=os.path.join(fonts_dir, 'Font Awesome 7 Free-Solid-900.otf')
+)
+
+LabelBase.register(
+    name='FontAwesomeRegular',
+    fn_regular=os.path.join(fonts_dir, 'Font Awesome 7 Free-Regular-400.otf')
+)
+
+LabelBase.register(
+    name='FontAwesomeBrands',
+    fn_regular=os.path.join(fonts_dir, 'Font Awesome 7 Brands-Regular-400.otf')
+)
+
+print("Font Awesome fonts registered successfully!")
+
 
 # Import the KV file
 from kivy.lang import Builder
@@ -624,7 +634,38 @@ class DatabaseManager:
             print(f"Error checking email: {e}")
             return False
     
-    # NEW METHODS FOR CHAT FUNCTIONALITY
+    # NEW METHODS FOR ADMIN SETTINGS FUNCTIONALITY
+    def get_current_user(self):
+        """Get current logged-in user data"""
+        try:
+            app = App.get_running_app()
+            current_email = getattr(app, 'current_user_email', None)
+            if not current_email:
+                print("⚠️ No current user email found")
+                return None
+            
+            return self.get_user_by_email(current_email)
+        except Exception as e:
+            print(f"Error getting current user: {e}")
+            return None
+
+    def logout_current_user(self):
+        """Clear current user session"""
+        try:
+            app = App.get_running_app()
+            # Clear all user session data
+            if hasattr(app, 'current_user'):
+                delattr(app, 'current_user')
+            if hasattr(app, 'current_user_email'):
+                delattr(app, 'current_user_email')
+            if hasattr(app, 'is_admin'):
+                delattr(app, 'is_admin')
+            print("✅ User session cleared")
+            return True
+        except Exception as e:
+            print(f"Error during logout: {e}")
+            return False
+
     def get_user_by_email(self, email):
         """Get complete user data by email"""
         try:
@@ -691,6 +732,7 @@ class DatabaseManager:
         except Exception as e:
             print(f"Error promoting to admin: {e}")
             return False
+    
     def demote_from_admin(self, user_id):
         """Demote a user from admin"""
         try:
@@ -708,6 +750,7 @@ class DatabaseManager:
         except Exception as e:
             print(f"Error demoting from admin: {e}")
             return False
+    
     def get_all_users(self):
         """Get all users (for admin purposes)"""
         try:
@@ -715,7 +758,7 @@ class DatabaseManager:
             cursor = conn.cursor()
             
             cursor.execute('''
-                SELECT id, name, email, region, is_admin FROM users
+                SELECT id, name, email, region, is_admin FROM users ORDER BY name
             ''')
             
             users = []
@@ -734,42 +777,53 @@ class DatabaseManager:
         except Exception as e:
             print(f"Error getting all users: {e}")
             return []
-
 # NEW: User Dashboard Screen
 class UserDashboardScreen(Screen):
-    first_name = StringProperty("User")  # Will be set dynamically
-    
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-    
+    first_name = StringProperty("User")
+    is_admin = BooleanProperty(False)
+
     def on_pre_enter(self):
-        """Called when the screen is about to be shown"""
-        print(f"Dashboard loaded for user: {self.first_name}")
-    
+        self.load_user_data()
+        print(f"Dashboard loaded for {self.first_name} (Admin: {self.is_admin})")
+
+    def load_user_data(self):
+        from kivy.app import App
+        app = App.get_running_app()
+
+        user_data = getattr(app, 'current_user', None)
+        if not user_data:
+            print("⚠️ No current user loaded")
+            return
+
+        # Set first name and admin status
+        self.first_name = user_data.get('name', 'User').split()[0]
+        self.is_admin = user_data.get('is_admin', False)
+        print(f"Dashboard loaded for {self.first_name} (Admin: {self.is_admin})")
+
+
+    # Navigation methods
     def navigate_to_about(self):
-        try:
-            self.manager.current = 'about'
-            print("Navigated to About screen")
-        except Exception as e:
-            print(f"Navigation error: {e}")
-    
+        self._navigate('about', "About")
+
     def navigate_to_chats(self):
-        try:
-            self.manager.current = 'chat'
-            print("Navigated to Chat screen")
-        except Exception as e:
-            print(f"Chat navigation error: {e}")
-    
+        target = 'admin_chat' if self.is_admin else 'user_chat'
+        self._navigate(target, "Chat")
+
     def navigate_to_notifications(self):
-        print("Navigate to Notifications")
-        # Implementation for Notifications navigation
-    
+        # Placeholder until notifications screens are added
+        print(f"Navigate to {'Admin' if self.is_admin else 'User'} Notifications")
+
     def navigate_to_settings(self):
+        target = 'AdminSettingsScreen' if self.is_admin else 'UserSettingsScreen'
+        self._navigate(target, "Settings")
+
+    def _navigate(self, screen_name, screen_label):
         try:
-            self.manager.current = 'settings'
-            print("Navigated to Settings screen")
+            self.manager.current = screen_name
+            print(f"Navigated to {screen_label} screen ({'Admin' if self.is_admin else 'User'})")
         except Exception as e:
-            print(f"Settings navigation error: {e}")
+            print(f"{screen_label} navigation error: {e}")
+
 # About Screen with Animations
 class AboutScreen(Screen):
     def __init__(self, **kwargs):
@@ -951,9 +1005,36 @@ import os
 import time
 
 
+# ============================================================
+# 🧑‍💼 ADMIN CHAT SCREEN — ORGANIZED + FEATURE-COMPLETE
+# ============================================================
+
+from kivy.uix.screenmanager import Screen
+from kivy.app import App
+from kivy.clock import Clock
+from kivy.lang import Builder
+from kivy.metrics import dp, sp
+from kivy.properties import ObjectProperty
+from kivy.uix.modalview import ModalView
+from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.floatlayout import FloatLayout
+from kivy.uix.scrollview import ScrollView
+from kivy.uix.gridlayout import GridLayout
+from kivy.uix.button import Button
+from kivy.uix.label import Label
+from kivy.uix.filechooser import FileChooserListView
+from kivy.uix.popup import Popup
+from kivy.factory import Factory
+from datetime import datetime
+import asyncio
+import threading
+import os
+import time
+
+
 class AdminChatScreen(Screen):
     """Admin-only chat interface for sending messages to user groups."""
-    
+
     backend = None
     current_user = None
     user_email = None
@@ -961,84 +1042,144 @@ class AdminChatScreen(Screen):
     current_chat_group = "all_users"
     pinned_messages = []
     message_poll_event = None
+    emoji_picker = ObjectProperty(None, allownone=True)
 
-    # =====================================================
-    # SCREEN ENTRY / INITIALIZATION
-    # =====================================================
+    # ============================================================
+    # 🔹 INITIALIZATION / SCREEN ENTRY
+    # ============================================================
     def on_enter(self):
-        """Initialize backend connection and load initial messages."""
+        """Initialize backend and begin polling messages."""
         try:
             app = App.get_running_app()
             self.backend = app.backend
-            self.current_user = "admin001"   # TODO: Replace with actual session user
+            self.current_user = "admin001"  # TODO: dynamically pull from session
             self.user_email = "admin@clckenya.org"
             self.available_groups = [
-                "all_users", "nairobi", "rift_valley", "coastal", "western", "central"
-            ]
-
+                "all_users", "nairobi", "rift_valley", "coastal", "western", "central"]
+            
+            self.pending_attachments = []
+            self.attachment_preview_area = self.ids.get("attachment_preview_area")
             print("🧑‍💼 AdminChatScreen initialized")
 
-            # Load messages immediately and start polling
             self.load_messages()
             self.start_message_polling()
-
         except Exception as e:
             print(f"❌ on_enter error: {e}")
 
     def on_leave(self):
-        """Stop background polling when leaving the screen."""
+        """Stop background polling."""
         try:
             if self.message_poll_event:
                 self.message_poll_event.cancel()
         except Exception as e:
-            print(f"on_leave cleanup error: {e}")
+            print(f"❌ on_leave cleanup error: {e}")
 
-    # =====================================================
-    # MESSAGE SENDING
-    # =====================================================
-    def send_message(self):
-        """Triggered by the Send button."""
+    def go_back(self):
+        """Navigate back to dashboard."""
         try:
-            content = self.ids.message_input.text.strip()
-            if not content:
-                return
+            if 'user_dashboard' in self.manager.screen_names:
+                self.manager.current = 'user_dashboard'
+            else:
+                self.manager.current = 'admin_chat'
+            print("⬅️ Back from AdminChatScreen")
+        except Exception as e:
+            print(f"Back navigation error: {e}")
+            self.manager.current = 'login'
+    # ============================================================
+    # 📎 Pending attachments & helper
+    # ============================================================
+    
 
-            # Display immediately in UI (temporary message)
-            temp = {
-                "id": f"local_{int(time.time() * 1000)}",
-                "sender_id": self.current_user,
-                "sender_name": "Admin",
-                "content": content,
-                "timestamp": datetime.now().strftime("%H:%M"),
-                "status": "sending",
-                "message_type": "text",
-                "media_path": None,
-                "media_name": None
-            }
-            self.add_message_card(temp)
-            self.scroll_to_bottom()
+    def _guess_media_type(self, file_path):
+        ext = file_path.lower()
+        if ext.endswith((".jpg", ".jpeg", ".png", ".gif")):
+            return "image"
+        elif ext.endswith((".mp4", ".mov", ".avi")):
+            return "video"
+        elif ext.endswith((".mp3", ".wav")):
+            return "audio"
+        elif ext.endswith((".pdf", ".doc", ".docx", ".txt")):
+            return "document"
+        return "file"
 
-            # Clear input field
+
+    # ============================================================
+    # ✉️ MESSAGE SENDING (updated)
+    # ============================================================
+    def send_message(self, linked_to=None):
+        """
+        Triggered by Send button — sends text + any pending attachments.
+        If attachments exist, sends them with optional caption.
+        """
+        try:
+            caption_text = self.ids.message_input.text.strip()
+            files_to_send = getattr(self, "pending_attachments", [])
+
+            if not caption_text and not files_to_send:
+                return  # nothing to send
+
+            # Clear input & preview immediately
             self.ids.message_input.text = ""
+            if hasattr(self, "attachment_preview_area") and self.attachment_preview_area:
+                self.attachment_preview_area.clear_widgets()
+            self.pending_attachments = []
 
-            # Send asynchronously
-            threading.Thread(target=self._send_async, args=(content,), daemon=True).start()
+            # 1️⃣ Send all attachments (with optional caption)
+            for file_path in files_to_send:
+                media_type = self._guess_media_type(file_path)
+                threading.Thread(
+                    target=self._upload_media_async,
+                    args=(file_path, media_type),
+                    daemon=True
+                ).start()
+
+            # 2️⃣ If only text (no attachments), send as regular message
+            if caption_text and not files_to_send:
+                temp_msg = {
+                    "id": f"local_{int(time.time() * 1000)}",
+                    "sender_id": self.current_user,
+                    "sender_name": "Admin",
+                    "content": caption_text,
+                    "timestamp": datetime.now().strftime("%H:%M"),
+                    "status": "sending",
+                    "message_type": "text",
+                    "media_path": None,
+                    "media_name": None,
+                }
+
+                # Add message immediately to UI
+                self.add_message_card(temp_msg)
+                self.scroll_to_bottom()
+
+                # Launch backend send
+                threading.Thread(
+                    target=self._send_async,
+                    args=(caption_text, linked_to),
+                    daemon=True
+                ).start()
 
         except Exception as e:
             print(f"❌ send_message error: {e}")
 
-    def _send_async(self, content):
-        """Send message to backend asynchronously."""
+
+
+
+    def _send_async(self, content, linked_to=None):
+        """Async send message to backend."""
         try:
             async def do_send():
                 result = await self.backend.send_message(
                     content=content,
                     sender_id=self.current_user,
                     sender_name="Admin",
-                    target_groups=[self.current_chat_group]
+                    target_groups=[self.current_chat_group],
+                    media_path=None,
+                    media_type="text",
+                    linked_to=linked_to
                 )
+
                 if result:
-                    print("✅ Sent to AppWrite")
+                    print("✅ Text message sent to backend")
                     Clock.schedule_once(lambda dt: self.load_messages(), 1)
 
             loop = asyncio.new_event_loop()
@@ -1047,30 +1188,56 @@ class AdminChatScreen(Screen):
             loop.close()
 
         except Exception as e:
-            print(f"❌ send async failed: {e}")
+            print(f"❌ send_async failed: {e}")
 
-    # =====================================================
-    # MESSAGE FETCHING / RENDERING
-    # =====================================================
-    def start_message_polling(self):
-        """Periodically refresh chat messages (every 10s)."""
-        try:
-            if self.message_poll_event:
-                self.message_poll_event.cancel()
-            self.message_poll_event = Clock.schedule_interval(lambda dt: self.load_messages(), 10)
-            print("🔄 Started message polling")
-        except Exception as e:
-            print(f"Polling start error: {e}")
+
+
+        # ============================================================
+        # 🔄 MESSAGE FETCHING / POLLING
+        # ============================================================
+        def start_message_polling(self):
+            """Poll messages every 10 seconds."""
+            try:
+                if self.message_poll_event:
+                    self.message_poll_event.cancel()
+
+                self.message_poll_event = Clock.schedule_interval(lambda dt: self.load_messages(), 10)
+                print("🔁 Started message polling")
+            except Exception as e:
+                print(f"Polling start error: {e}")
 
     def load_messages(self):
-        """Load messages from backend asynchronously."""
+        """Load messages asynchronously from backend."""
         try:
             def background_fetch():
                 try:
                     async def get_msgs():
                         msgs = await self.backend.get_messages([self.current_chat_group])
                         if msgs:
+                            # Normalize data types before rendering
+                            for m in msgs:
+                                # Ensure read_by is an array
+                                read_by = m.get("read_by", [])
+                                if isinstance(read_by, str):
+                                    try:
+                                        read_by = json.loads(read_by)
+                                    except Exception:
+                                        read_by = []
+                                m["read_by"] = read_by
+
+                                # Ensure timestamp is numeric (convert ms → s)
+                                ts_value = m.get("timestamp", time.time())
+                                try:
+                                    ts_value = float(ts_value)
+                                    # 🔧 FIX: convert milliseconds → seconds
+                                    if ts_value > 1e11:  
+                                        ts_value /= 1000
+                                except Exception:
+                                    ts_value = time.time()
+                                m["timestamp"] = ts_value
+
                             Clock.schedule_once(lambda dt: self.render_messages(msgs), 0)
+
                     loop = asyncio.new_event_loop()
                     asyncio.set_event_loop(loop)
                     loop.run_until_complete(get_msgs())
@@ -1079,134 +1246,342 @@ class AdminChatScreen(Screen):
                     print(f"Error loading messages: {e}")
 
             threading.Thread(target=background_fetch, daemon=True).start()
+
         except Exception as e:
             print(f"load_messages error: {e}")
 
+
     def render_messages(self, messages):
-        """Render all messages inside the scroll container."""
+        """Render or update messages incrementally without wiping the UI."""
         try:
             container = self.ids.message_container
-            container.clear_widgets()
-
-            # Sort oldest → newest
-            for msg in sorted(messages, key=lambda m: m.get("timestamp", 0)):
-                msg_dict = {
-                    "id": msg.get("$id", ""),
-                    "sender_id": msg.get("sender_id", ""),
-                    "sender_name": msg.get("sender_name", ""),
-                    "content": msg.get("content", ""),
-                    "timestamp": datetime.fromtimestamp(
-                        msg.get("timestamp", time.time())
-                    ).strftime("%H:%M"),
-                    "status": "delivered",
-                    "message_type": msg.get("media_type", "text"),
-                    "media_path": msg.get("media_path"),
-                    "media_name": os.path.basename(msg.get("media_path")) if msg.get("media_path") else None
-                }
-                self.add_message_card(msg_dict)
-            self.scroll_to_bottom()
-        except Exception as e:
-            print(f"render_messages error: {e}")
-
-    # =====================================================
-    # MESSAGE CARD CREATION
-    # =====================================================
-    def open_emoji_picker(self):
-        """Placeholder for emoji picker."""
-        print("😀 Emoji picker clicked — placeholder")
-
-    def add_message_card(self, msg):
-        """Create instance of AdminMessageCard (defined in KV)."""
-        try:
-            widget_name = "AdminMessageCard"
-            widget_cls = getattr(Factory, widget_name, None)
-            if not widget_cls:
-                print(f"❌ add_message_card error: Unknown <{widget_name}> in KV")
-                return
-
-            # Adjust content mapping
-            if widget_name == "AdminMessageCard" and "content" in msg:
-                msg["content_text"] = msg.pop("content")
-
-            # Instantiate widget and assign properties
-            card = widget_cls()
-            mapping = {
-                "id": "message_id",
-                "message_id": "message_id",
-                "sender_name": "sender_name",
-                "content_text": "content_text",
-                "timestamp": "timestamp",
-                "message_type": "message_type",
-                "media_path": "media_path",
-                "media_name": "media_name",
-                "status": "status"
+            existing_cards = {
+                child.message_id: child
+                for child in container.children
+                if hasattr(child, "message_id")
             }
 
-            for k, v in msg.items():
-                prop = mapping.get(k, k)
+            # Build index for linking captions
+            msg_index = {m.get("$id"): m for m in messages}
+
+            # Sort oldest → newest
+            messages_sorted = sorted(messages, key=lambda m: m.get("timestamp", 0))
+            seen_ids = set()
+
+            for msg in messages_sorted:
+                msg_id = msg.get("$id", "")
+                seen_ids.add(msg_id)
+                msg_type = msg.get("message_type", "text")
+                linked_to = msg.get("linked_to")
+
+                # Handle captions linked to media
+                if linked_to and linked_to in msg_index:
+                    msg_index[linked_to]["caption_text"] = msg.get("content", "")
+                    continue
+
+                # Format timestamp safely
+                ts_value = msg.get("timestamp", time.time())
                 try:
-                    setattr(card, prop, v)
+                    ts_value = float(ts_value)
+                    if ts_value > 1e11:  # milliseconds → seconds
+                        ts_value /= 1000
+                    formatted_time = datetime.fromtimestamp(ts_value).strftime("%H:%M")
+                except Exception:
+                    formatted_time = datetime.now().strftime("%H:%M")
+
+                msg_dict = {
+                    "id": msg_id,
+                    "sender_id": msg.get("sender_id", ""),
+                    "sender_name": msg.get("sender_name", ""),
+                    "content": msg.get("content", msg.get("caption_text", "")),
+                    "timestamp": formatted_time,
+                    "status": msg.get("status", "delivered"),
+                    "message_type": msg_type,
+                    "media_path": msg.get("media_path"),
+                    "media_name": os.path.basename(msg.get("media_path"))
+                    if msg.get("media_path")
+                    else None,
+                }
+
+                # ✅ Update or create cards
+                if msg_id in existing_cards:
+                    card = existing_cards[msg_id]
+                    if card.status != msg_dict["status"]:
+                        card.status = msg_dict["status"]
+                        if hasattr(card, "tick_label"):
+                            card.tick_label.text = card.tick_icon
+                            card.tick_label.color = card.tick_color
+                else:
+                    print(f"🆕 Adding new message card {msg_id}")
+                    self.add_message_card(msg_dict)
+
+                # ✅ Mark as read when user sees it (if from another sender)
+                if (
+                    msg_dict["sender_id"] != self.current_user
+                    and msg_dict["status"] != "read"
+                    and self.backend.online_mode
+                ):
+                    threading.Thread(
+                        target=lambda: asyncio.run(
+                            self.backend.mark_message_as_read(msg_dict["id"], self.current_user)
+                        ),
+                        daemon=True,
+                    ).start()
+
+            # 🚫 Do not remove old cards (prevents flicker)
+            self.scroll_to_bottom()
+
+        except Exception as e:
+            print(f"render_messages error: {e}")
+    # ============================================================
+    # 🧱 MESSAGE CARD CREATION
+    # ============================================================
+    def add_message_card(self, msg):
+        """Create AdminMessageCard widget dynamically."""
+        try:
+            widget_cls = getattr(Factory, "AdminMessageCard", None)
+            if not widget_cls:
+                print("❌ Unknown <AdminMessageCard> in KV")
+                return
+
+            # remap fields
+            msg["content_text"] = msg.pop("content", "")
+            card = widget_cls()
+
+            for k, v in msg.items():
+                try:
+                    setattr(card, k, v)
                 except Exception:
                     pass
 
-            # Add to UI
             self.ids.message_container.add_widget(card)
+
         except Exception as e:
             print(f"❌ add_message_card error: {e}")
 
     def scroll_to_bottom(self):
-        """Scroll chat view to the latest message."""
+        """Auto-scroll to newest message."""
         try:
             self.ids.scroll_view.scroll_y = 0
         except Exception:
             pass
 
-    # =====================================================
-    # ATTACHMENTS
-    # =====================================================
-    def open_attachment_picker(self):
-        """Open file chooser to attach images, videos, or documents."""
+    # ============================================================
+    # 😊 EMOJI PICKER
+    # ============================================================
+    def open_emoji_picker(self):
+        """Open floating emoji picker above input bar."""
         try:
-            fc = FileChooserListView(filters=["*.jpg", "*.png", "*.mp4", "*.pdf", "*.docx"])
-            popup = Popup(title="📎 Select a file", content=fc, size_hint=(0.9, 0.8))
-            fc.bind(on_submit=lambda fc, sel, touch: self._send_attachment(popup, sel))
-            popup.open()
+            if self.emoji_picker:
+                self.close_emoji_picker()
+                return
+
+            emojis = [
+                # 😀 faces + gestures + symbols (shortened list for brevity)
+                "😀","😁","😂","🤣","😃","😄","😅","😉","😊","😍","😘","😎","🤔","😏","😢","😭","😤","😡","🤬",
+                "👋","👌","👍","👎","👏","🙏","💪","❤️","💙","💚","💛","💜","🖤","💔","💞","💕","💖","💘","💝","💥",
+                "⭐","🌈","🔥","💧","🍀","🌹","🌸","🎉","🎁","🎈","💡","⚡","💻","📱","👀","👂","🧠"
+            ]
+
+            grid = GridLayout(cols=8, spacing=5, padding=5, size_hint_y=None)
+            grid.bind(minimum_height=grid.setter("height"))
+
+            for emoji in emojis:
+                btn = Button(
+                    text=emoji, font_size=24,
+                    size_hint=(None, None), size=(48, 48),
+                    background_normal='', background_down='',
+                    background_color=(0.05, 0.05, 0.05, 1),
+                    color=(0, 1, 0.4, 1)
+                )
+                btn.bind(on_press=lambda instance, e=emoji: self.insert_emoji(e))
+                grid.add_widget(btn)
+
+            scroll = ScrollView(size_hint=(1, None), height=dp(220), bar_width=dp(6))
+            scroll.add_widget(grid)
+
+            overlay = FloatLayout(size_hint=(1, None), height=dp(220))
+            overlay.add_widget(scroll)
+            overlay.pos = (0, self.ids.input_bar.top)
+
+            self.add_widget(overlay)
+            self.emoji_picker = overlay
+
         except Exception as e:
-            print(f"attachment_picker error: {e}")
+            print(f"emoji_picker error: {e}")
 
-    def _send_attachment(self, popup, selection):
-        popup.dismiss()
-        if not selection:
-            return
-        file_path = selection[0]
-        ext = os.path.splitext(file_path)[1].lower()
-        media_type = (
-            "image" if ext in [".jpg", ".jpeg", ".png"]
-            else "video" if ext in [".mp4", ".mov"]
-            else "document"
-        )
+    def close_emoji_picker(self):
+        """Close emoji overlay."""
+        if self.emoji_picker:
+            self.remove_widget(self.emoji_picker)
+            self.emoji_picker = None
 
-        temp = {
-            "id": f"local_{int(time.time() * 1000)}",
-            "sender_id": self.current_user,
-            "sender_name": "Admin",
-            "content": "",
-            "timestamp": datetime.now().strftime("%H:%M"),
-            "status": "sending",
-            "message_type": media_type,
-            "media_path": file_path,
-            "media_name": os.path.basename(file_path)
-        }
-        self.add_message_card(temp)
-        threading.Thread(
-            target=self._upload_media_async, args=(file_path, media_type), daemon=True
-        ).start()
+    def insert_emoji(self, emoji):
+        """Insert emoji into text input."""
+        self.ids.message_input.text += emoji
+        self.close_emoji_picker()
+
+    # ============================================================
+    # 📎 ATTACHMENTS
+    # ============================================================
+    from kivy.uix.popup import Popup
+    from kivy.uix.boxlayout import BoxLayout
+    from kivy.uix.filechooser import FileChooserListView
+    from kivy.uix.button import Button
+    from kivy.metrics import dp
+    from kivy.uix.label import Label
+    from kivy.uix.image import Image
+    from kivy.utils import platform
+    import os
+
+
+    def open_attachment_picker(self):
+        from kivy.utils import platform
+        """Open a categorized and styled file picker popup for selecting multiple attachments."""
+        try:
+            # 🌍 Determine top-level path depending on platform
+            if platform == "android":
+                base_path = "/storage/emulated/0/"  # Android root (user-accessible)
+            elif platform in ("win", "linux", "macosx"):
+                base_path = "C:/" if os.name == "nt" else os.path.expanduser("~")
+            else:
+                base_path = os.path.expanduser("~")
+
+            # 📂 Define allowed file types
+            file_filters = [
+                "*.jpg", "*.jpeg", "*.png", "*.gif",
+                "*.mp4", "*.mov", "*.avi",
+                "*.mp3", "*.wav",
+                "*.pdf", "*.doc", "*.docx", "*.txt"
+            ]
+
+            # 🗂️ Create file chooser
+            fc = FileChooserListView(
+                path=base_path,
+                filters=file_filters,
+                multiselect=True,
+                dirselect=False
+            )
+
+            # ✅ Add readable labels for file categories
+            category_bar = BoxLayout(
+                size_hint_y=None,
+                height=dp(40),
+                spacing=dp(5),
+                padding=[dp(5), dp(5)]
+            )
+
+            categories = {
+                "🖼️ Images": ["*.jpg", "*.jpeg", "*.png", "*.gif"],
+                "🎥 Videos": ["*.mp4", "*.mov", "*.avi"],
+                "🎧 Audio": ["*.mp3", "*.wav"],
+                "📄 Documents": ["*.pdf", "*.doc", "*.docx", "*.txt"],
+                "📁 All": file_filters
+            }
+
+            def apply_filter(f_patterns):
+                fc.filters = f_patterns
+                fc._update_files()
+
+            for label_text, patterns in categories.items():
+                btn = Button(
+                    text=label_text,
+                    font_size="13sp",
+                    size_hint_x=None,
+                    width=dp(100),
+                    background_color=(0.1, 0.6, 1, 1),
+                    color=(1, 1, 1, 1),
+                    on_release=lambda btn, p=patterns: apply_filter(p)
+                )
+                category_bar.add_widget(btn)
+
+            # 🔘 Bottom buttons
+            btn_layout = BoxLayout(size_hint_y=None, height=dp(50), spacing=dp(10), padding=[dp(10), dp(5)])
+
+            btn_cancel = Button(
+                text="❌ Cancel",
+                background_color=(0.3, 0.3, 0.3, 1),
+                color=(1, 1, 1, 1)
+            )
+
+            def select_files(instance):
+                if not fc.selection:
+                    print("⚠️ No files selected.")
+                    return
+
+                selected_files = fc.selection
+                popup.dismiss()
+
+                print(f"📎 Selected {len(selected_files)} attachments:")
+                for f in selected_files:
+                    print("   •", f)
+
+                # Store multiple files
+                self.pending_attachments = selected_files
+
+                # 🔍 Update preview area
+                if hasattr(self, 'attachment_preview_area'):
+                    self.attachment_preview_area.clear_widgets()
+
+                    for file_path in selected_files:
+                        file_name = os.path.basename(file_path)
+
+                        if file_path.lower().endswith((".jpg", ".jpeg", ".png", ".gif")):
+                            thumb = Image(source=file_path, size_hint=(None, None), size=(dp(60), dp(60)))
+                            self.attachment_preview_area.add_widget(thumb)
+                        else:
+                            label = Label(
+                                text=f"📄 {file_name}",
+                                color=(0, 0, 0, 1),
+                                font_size='14sp',
+                                size_hint_x=None,
+                                width=dp(200)
+                            )
+                            self.attachment_preview_area.add_widget(label)
+
+                    print("✅ Attachments preview added — awaiting send.")
+
+            btn_select = Button(
+                text="📂 Attach",
+                background_color=(0.1, 0.7, 0.3, 1),
+                color=(1, 1, 1, 1),
+                on_release=select_files
+            )
+
+            btn_cancel.bind(on_release=lambda *_: popup.dismiss())
+
+            btn_layout.add_widget(btn_cancel)
+            btn_layout.add_widget(btn_select)
+
+            # 🪟 Combine layout
+            content = BoxLayout(orientation="vertical", spacing=dp(5))
+            content.add_widget(category_bar)
+            content.add_widget(fc)
+            content.add_widget(btn_layout)
+
+            popup = Popup(
+                title="📎 Select Files to Attach",
+                content=content,
+                size_hint=(0.95, 0.9),
+                auto_dismiss=False
+            )
+            popup.open()
+
+        except Exception as e:
+            print(f"[⚠️ ERROR] Attachment picker failed: {e}")
+
+
+
 
     def _upload_media_async(self, file_path, media_type):
-        """Upload attachment asynchronously."""
+        """Upload media and optionally send a caption linked to it."""
         try:
+            caption_text = self.ids.message_input.text.strip()
+            self.ids.message_input.text = ""  # clear input
+
             async def do_upload():
-                result = await self.backend.send_message(
+                # Step 1️⃣ Send the media itself
+                media_doc = await self.backend.send_message(
                     content="",
                     sender_id=self.current_user,
                     sender_name="Admin",
@@ -1214,21 +1589,40 @@ class AdminChatScreen(Screen):
                     media_path=file_path,
                     media_type=media_type
                 )
-                if result:
-                    Clock.schedule_once(lambda dt: self.load_messages(), 1)
+
+                media_message_id = media_doc.get("$id") if media_doc else None
+
+                # Step 2️⃣ If caption exists, send it as linked message
+                if caption_text and media_message_id:
+                    await self.backend.send_message(
+                        content=caption_text,
+                        sender_id=self.current_user,
+                        sender_name="Admin",
+                        target_groups=[self.current_chat_group],
+                        media_path=None,
+                        media_type="text",
+                        linked_to=media_message_id
+                    )
+
+                # Step 3️⃣ Refresh UI
+                Clock.schedule_once(lambda dt: self.load_messages(), 1)
 
             loop = asyncio.new_event_loop()
             asyncio.set_event_loop(loop)
             loop.run_until_complete(do_upload())
             loop.close()
-        except Exception as e:
-            print(f"upload_media error: {e}")
 
-    # =====================================================
-    # PINNING / DELETING
-    # =====================================================
+        except Exception as e:
+            print(f"upload_media_async error: {e}")
+
+
+
+
+        # ============================================================
+        # 📌 PINNING / DELETING
+        # ============================================================
     def pin_message(self, message_id):
-        """Pin a message locally."""
+        """Pin message locally."""
         try:
             if message_id not in [m["id"] for m in self.pinned_messages]:
                 self.pinned_messages.append({"id": message_id, "title": "Pinned"})
@@ -1240,7 +1634,7 @@ class AdminChatScreen(Screen):
         """Delete message from backend."""
         try:
             async def do_delete():
-                self.backend.databases.delete_document(
+                await self.backend.databases.delete_document(
                     database_id=self.backend.database_id,
                     collection_id=self.backend.messages_collection_id,
                     document_id=message_id
@@ -1255,48 +1649,46 @@ class AdminChatScreen(Screen):
         except Exception as e:
             print(f"delete_message error: {e}")
 
-    # =====================================================
-    # STATS OVERLAY
-    # =====================================================
+    # ============================================================
+    # ✅ MESSAGE STATS (ticks)
+    # ============================================================
     def toggle_stats(self, message_id):
-        """Show or hide stats overlay for message card."""
+        """Toggle message stats visibility (read/delivered)."""
         try:
             card = self.ids.message_container.ids.get(message_id)
             if not card:
-                print("No card found for stats toggle")
                 return
             if hasattr(card, "stats_visible"):
                 card.stats_visible = not card.stats_visible
         except Exception as e:
             print(f"toggle_stats error: {e}")
 
-    # =====================================================
-    # RECIPIENT SELECTION
-    # =====================================================
+    # ============================================================
+    # 👥 RECIPIENT SELECTION
+    # ============================================================
     def open_recipient_selector(self):
-        """Bottom sheet for selecting recipient group."""
+        """Select which group(s) to message."""
         try:
             modal = ModalView(size_hint=(1, None), height=dp(300), background_color=(0, 0, 0, 0.7))
             layout = BoxLayout(orientation="vertical", padding=dp(12), spacing=dp(8))
-            title = Label(
-                text="Select Recipients", font_size=sp(18),
-                color=(1, 1, 1, 1), size_hint_y=None, height=dp(40)
-            )
+
+            title = Label(text="Select Recipients", font_size=sp(18), color=(1, 1, 1, 1),
+                          size_hint_y=None, height=dp(40))
             layout.add_widget(title)
 
             for group in self.available_groups:
                 btn = Button(
                     text=group.upper(),
                     size_hint_y=None, height=dp(45),
-                    background_color=(0.15, 0.15, 0.15, 1),
-                    color=(1, 1, 1, 1),
+                    background_color=(0.1, 0.1, 0.1, 1),
+                    color=(0, 1, 0.3, 1),
                     on_release=lambda btn, g=group: self._select_recipient(g, modal)
                 )
                 layout.add_widget(btn)
 
             cancel = Button(
                 text="Cancel", size_hint_y=None, height=dp(45),
-                background_color=(0.2, 0.2, 0.2, 1),
+                background_color=(0.15, 0.15, 0.15, 1),
                 color=(1, 1, 1, 1),
                 on_release=modal.dismiss
             )
@@ -1307,10 +1699,10 @@ class AdminChatScreen(Screen):
             print(f"open_recipient_selector error: {e}")
 
     def _select_recipient(self, group, modal):
-        """Set target group for outgoing messages."""
+        """Set the active recipient group."""
         modal.dismiss()
         self.current_chat_group = group
-        print(f"👥 Selected recipient group: {group}")
+        print(f"👥 Selected group: {group}")
 
 
 from kivy.uix.screenmanager import Screen
@@ -1341,8 +1733,9 @@ class UserChatScreen(Screen):
     user_email = None
     current_user = None
     user_region = None
-    pinned_messages = []
     periodic_update_event = None
+    last_message_count = 0
+    processed_messages = set()  # Track which messages we've already processed
 
     def on_enter(self):
         """When the screen loads"""
@@ -1355,12 +1748,32 @@ class UserChatScreen(Screen):
 
             print(f"👤 Entered UserChatScreen for {self.user_email} ({self.user_region})")
 
-            # Load messages and pinned items
+            # Update status
+            self.update_status("Loading messages...")
+            self.ids.last_update_label.text = datetime.now().strftime("%H:%M")
+            
+            # Load messages
             self.load_messages()
-            self.load_pinned_messages()
             self.start_polling()
+            
         except Exception as e:
             print(f"❌ UserChatScreen on_enter error: {e}")
+            self.update_status("Error loading messages")
+
+    def update_status(self, message):
+        """Helper method to update status label"""
+        try:
+            self.ids.status_label.text = message
+        except Exception as e:
+            print(f"Status update error: {e}")
+
+    def go_back(self):
+        try:
+            self.manager.current = 'user_dashboard'
+            print("⬅️ Back to dashboard from UserChat")
+        except Exception as e:
+            print(f"Back navigation error: {e}")
+            self.manager.current = 'login'
 
     def on_leave(self):
         """Stop periodic updates"""
@@ -1368,12 +1781,9 @@ class UserChatScreen(Screen):
             if self.periodic_update_event:
                 self.periodic_update_event.cancel()
                 self.periodic_update_event = None
+            print("👋 Left UserChatScreen")
         except Exception as e:
             print(f"❌ UserChatScreen on_leave error: {e}")
-
-    # ======================================================
-    # 📥 MESSAGE FETCHING AND RENDERING
-    # ======================================================
 
     def load_messages(self):
         """Fetch messages from AppWrite (async in thread)"""
@@ -1383,15 +1793,21 @@ class UserChatScreen(Screen):
                     async def get_msgs():
                         msgs = await self.backend.get_messages(["all_users", self.user_region])
                         if msgs:
-                            # Filter only admin messages
+                            # Filter only admin messages and sort by timestamp
                             admin_msgs = [
                                 m for m in msgs
-                                if "admin" in m.get("sender_id", "").lower()
-                                or "admin" in m.get("sender_name", "").lower()
+                                if m.get("sender_name", "").lower() == "admin" or 
+                                   "admin" in m.get("sender_id", "").lower()
                             ]
+                            # Sort by timestamp (newest first for display)
+                            admin_msgs.sort(key=lambda m: m.get("timestamp", 0), reverse=True)
+                            
+                            # Update message statuses for new messages
+                            await self.update_message_statuses(admin_msgs)
+                            
                             Clock.schedule_once(lambda dt: self.render_messages(admin_msgs), 0)
                         else:
-                            print("⚠️ No messages found from backend")
+                            Clock.schedule_once(lambda dt: self.show_no_messages(), 0)
 
                     loop = asyncio.new_event_loop()
                     asyncio.set_event_loop(loop)
@@ -1399,127 +1815,301 @@ class UserChatScreen(Screen):
                     loop.close()
                 except Exception as e:
                     print(f"❌ Error fetching messages: {e}")
+                    Clock.schedule_once(lambda dt: self.update_status("Connection error"), 0)
 
             threading.Thread(target=background_fetch, daemon=True).start()
         except Exception as e:
             print(f"❌ load_messages error: {e}")
+            self.update_status("Load error")
+
+    async def update_message_statuses(self, messages):
+        """Update message statuses (sent → delivered → read) for current user."""
+        try:
+            loop = asyncio.get_event_loop()
+
+            for msg in messages:
+                message_id = msg.get("$id")
+                if not message_id:
+                    continue
+
+                # Skip if we've already processed this message
+                if message_id in self.processed_messages:
+                    continue
+
+                sender_id = msg.get("sender_id", "")
+                current_user_id = self.current_user
+
+                # Only update status for messages not sent by the current user
+                if sender_id != current_user_id:
+                    current_status = msg.get("status", "sent")
+                    read_by = msg.get("read_by", [])
+
+                    # Normalize `read_by`
+                    if isinstance(read_by, str):
+                        try:
+                            read_by = json.loads(read_by)
+                        except Exception:
+                            read_by = []
+                    elif not isinstance(read_by, list):
+                        read_by = []
+
+                    # ✅ Mark as delivered (if needed)
+                    if current_status == "sent":
+                        print(f"📨 Marking message {message_id} as delivered")
+                        success = await loop.run_in_executor(
+                            None, self.backend.update_message_status, message_id, "delivered"
+                        )
+                        if success:
+                            msg["status"] = "delivered"
+
+                    # ✅ Mark as read (if not already)
+                    if current_user_id not in read_by:
+                        print(f"👁️ Marking message {message_id} as read by {current_user_id}")
+                        success = await loop.run_in_executor(
+                            None, self.backend.mark_message_as_read, message_id, current_user_id
+                        )
+                        if success:
+                            read_by.append(current_user_id)
+                            msg["read_by"] = read_by
+                            msg["status"] = "read"
+
+                    # Cache this message ID so we don't reprocess it
+                    self.processed_messages.add(message_id)
+
+        except Exception as e:
+            print(f"❌ Error updating message statuses: {e}")
+
 
     def render_messages(self, messages):
-        """Render messages to UI"""
+        """Render or update messages incrementally and update status ticks."""
         try:
             container = self.ids.message_container
-            container.clear_widgets()
+            existing_cards = {
+                child.message_id: child
+                for child in container.children
+                if hasattr(child, "message_id")
+            }
 
             # Sort oldest → newest
             messages_sorted = sorted(messages, key=lambda m: m.get("timestamp", 0))
+            seen_ids = set()
 
             for msg in messages_sorted:
-                ts = msg.get("timestamp", time.time())
-                if isinstance(ts, (int, float)):
-                    ts_str = datetime.fromtimestamp(ts).strftime("%H:%M")
-                else:
-                    try:
-                        ts_str = datetime.fromisoformat(ts).strftime("%H:%M")
-                    except Exception:
-                        ts_str = "00:00"
+                msg_id = msg.get("$id", "")
+                seen_ids.add(msg_id)
 
-                # Build message dict for KV
+                # Skip if we already displayed this message and it's unchanged
+                if msg_id in existing_cards:
+                    card = existing_cards[msg_id]
+                    # Update ticks if status changed
+                    new_status = msg.get("status", "delivered")
+                    if hasattr(card, "status") and card.status != new_status:
+                        card.status = new_status
+                        if hasattr(card, "tick_label"):
+                            card.tick_label.text = card.tick_icon
+                            card.tick_label.color = card.tick_color
+                    continue
+
+                # Safe timestamp formatting
+                ts_value = msg.get("timestamp", time.time())
+                try:
+                    ts_value = float(ts_value)
+                    if ts_value > 1e11:  # milliseconds → seconds
+                        ts_value /= 1000
+                    formatted_time = datetime.fromtimestamp(ts_value).strftime("%H:%M")
+                except Exception:
+                    formatted_time = datetime.now().strftime("%H:%M")
+
                 msg_dict = {
-                    "message_id": msg.get("$id", f"msg_{int(time.time()*1000)}"),
-                    "sender_name": msg.get("sender_name", "Admin"),
+                    "id": msg_id,
+                    "sender_id": msg.get("sender_id", ""),
+                    "sender_name": msg.get("sender_name", ""),
                     "content": msg.get("content", ""),
-                    "timestamp": ts_str,
-                    "message_type": msg.get("media_type", "text"),
-                    "media_path": msg.get("media_path", None),
-                    "media_name": os.path.basename(msg.get("media_path")) if msg.get("media_path") else None
+                    "timestamp": formatted_time,
+                    "status": msg.get("status", "delivered"),
+                    "message_type": msg.get("message_type", "text"),
+                    "media_path": msg.get("media_path"),
+                    "media_name": os.path.basename(msg.get("media_path"))
+                    if msg.get("media_path")
+                    else None,
                 }
 
+                # Add new message card
                 self.add_message_card(msg_dict)
+                print(f"🆕 Added message card {msg_id}")
 
+                # ✅ Immediately mark as read if visible and not sent by current user
+                if (
+                    msg_dict["sender_id"] != self.current_user
+                    and msg_dict["status"] != "read"
+                    and self.backend.online_mode
+                ):
+                    threading.Thread(
+                        target=lambda: asyncio.run(
+                            self.backend.mark_message_as_read(msg_dict["id"], self.current_user)
+                        ),
+                        daemon=True,
+                    ).start()
+
+            # Update stats on screen
+            delivered_count = sum(1 for msg in messages if msg.get("status") in ["delivered", "read"])
+            read_count = sum(1 for msg in messages if msg.get("status") == "read")
+
+            status_text = f"{len(messages)} announcements"
+            if delivered_count > 0:
+                status_text += f" • {delivered_count} delivered"
+            if read_count > 0:
+                status_text += f" • {read_count} read"
+
+            self.update_status(status_text)
+            self.ids.last_update_label.text = datetime.now().strftime("%H:%M")
             self.scroll_to_bottom()
-            print(f"📨 Rendered {len(messages)} admin messages.")
+
         except Exception as e:
             print(f"❌ render_messages error: {e}")
+            self.update_status("Render error")
+
+
+    def show_no_messages(self):
+        """Show message when no announcements available"""
+        try:
+            container = self.ids.message_container
+            container.clear_widgets()
+            
+            no_msg_layout = BoxLayout(
+                orientation='vertical',
+                size_hint_y=None,
+                height=dp(200),
+                padding=[dp(20), dp(20)]
+            )
+            
+            with no_msg_layout.canvas.before:
+                Color(0.1, 0.1, 0.1, 0.7)
+                RoundedRectangle(
+                    pos=no_msg_layout.pos,
+                    size=no_msg_layout.size,
+                    radius=[dp(15),]
+                )
+            
+            icon = Label(
+                text='📭',
+                font_size=sp(40),
+                color=(0.949, 0.788, 0.298, 1),
+                size_hint_y=None,
+                height=dp(60)
+            )
+            
+            text = Label(
+                text='No announcements yet\nCheck back later for updates',
+                font_size=sp(16),
+                color=(1, 1, 1, 0.9),
+                halign='center',
+                size_hint_y=None,
+                height=dp(80)
+            )
+            
+            no_msg_layout.add_widget(icon)
+            no_msg_layout.add_widget(text)
+            container.add_widget(no_msg_layout)
+            
+            self.update_status("No messages")
+            
+        except Exception as e:
+            print(f"Error showing no messages: {e}")
 
     def add_message_card(self, msg):
-        """Adds one UserMessageCard (defined in KV)"""
+        """Adds one UserMessageCard with proper data formatting"""
         try:
-            card = Builder.template("UserMessageCard", **msg)
+            # Convert timestamp
+            ts = msg.get("timestamp", time.time())
+            if isinstance(ts, (int, float)):
+                # Handle both seconds and milliseconds
+                if ts > 1e11:  # Likely milliseconds
+                    ts = ts / 1000
+                ts_str = datetime.fromtimestamp(ts).strftime("%b %d, %H:%M")
+            else:
+                try:
+                    ts_str = datetime.fromisoformat(ts.replace('Z', '+00:00')).strftime("%b %d, %H:%M")
+                except Exception:
+                    ts_str = "Recent"
+            
+            # Handle message type and content
+            message_type = msg.get("message_type", "text")
+            content = msg.get("content", "")
+            media_path = msg.get("media_path")
+            
+            # Add delivery status indicator
+            status = msg.get("status", "sent")
+            read_by = msg.get("read_by", [])
+            if isinstance(read_by, str):
+                try:
+                    read_by = json.loads(read_by)
+                except:
+                    read_by = []
+            
+            # Add status indicator to content
+            status_indicator = ""
+            if status == "read":
+                status_indicator = " 👁️"
+            elif status == "delivered":
+                status_indicator = " ✓✓"
+            elif status == "sent":
+                status_indicator = " ✓"
+            
+            # If it's a caption for media, adjust display
+            if msg.get("linked_to") and media_path:
+                content = f"📎 {content}" if content else "📎 Media attachment"
+            
+            # Use Factory to create the dynamic class
+            from kivy.factory import Factory
+            card = Factory.UserMessageCard()
+            
+            # Set properties
+            card.message_type = message_type
+            card.content = content + status_indicator
+            card.sender_name = msg.get("sender_name", "Admin")
+            card.timestamp = ts_str
+            card.media_path = media_path
+            card.media_name = os.path.basename(media_path) if media_path else None
+            
             self.ids.message_container.add_widget(card)
+            
         except Exception as e:
             print(f"❌ add_message_card error: {e}")
 
     def scroll_to_bottom(self):
-        """Auto-scroll to bottom after rendering"""
+        """Auto-scroll to newest message (top of reversed list)"""
         try:
-            self.ids.scroll_view.scroll_y = 0
-        except Exception:
-            pass
-
-    # ======================================================
-    # 📌 PINNED MESSAGES
-    # ======================================================
-
-    def load_pinned_messages(self):
-        """Show pinned messages (local example or backend logic)"""
-        try:
-            self.pinned_messages = [
-                {"id": "p1", "title": "📢 Welcome to CLC Kenya"},
-                {"id": "p2", "title": "⚠️ Important Announcements"},
-            ]
-            pinned_strip = self.ids.pinned_strip
-            pinned_strip.clear_widgets()
-
-            from kivy.uix.boxlayout import BoxLayout
-            from kivy.uix.label import Label
-            from kivy.uix.behaviors import ButtonBehavior
-            from kivy.graphics import Color, RoundedRectangle
-
-            class PinnedCard(ButtonBehavior, BoxLayout):
-                def __init__(self, title, **kwargs):
-                    super().__init__(**kwargs)
-                    self.orientation = "horizontal"
-                    self.size_hint_x = None
-                    self.width = dp(180)
-                    self.padding = dp(6)
-                    self.spacing = dp(4)
-                    with self.canvas.before:
-                        Color(0.15, 0.15, 0.15, 1)
-                        self.bg = RoundedRectangle(pos=self.pos, size=self.size, radius=[dp(8)])
-                    self.bind(pos=self._update_bg, size=self._update_bg)
-
-                    lbl = Label(text=title, color=(0.95, 0.9, 0.3, 1), font_size=sp(13))
-                    self.add_widget(lbl)
-
-                def _update_bg(self, *args):
-                    self.bg.pos = self.pos
-                    self.bg.size = self.size
-
-                def on_press(self):
-                    print(f"📌 Tapped pinned message: {self.children[0].text}")
-
-            for msg in self.pinned_messages:
-                pinned_strip.add_widget(PinnedCard(msg["title"]))
+            # Since we display newest first, scroll to top (index 0)
+            self.ids.scroll_view.scroll_y = 1.0
         except Exception as e:
-            print(f"❌ load_pinned_messages error: {e}")
-
-    # ======================================================
-    # 🔄 PERIODIC UPDATES
-    # ======================================================
+            print(f"Scroll error: {e}")
 
     def start_polling(self):
-        """Automatically refresh messages"""
+        """Automatically refresh messages with status updates"""
         try:
             if self.periodic_update_event:
                 self.periodic_update_event.cancel()
 
             def refresh(dt):
+                self.update_status("Checking for updates...")
                 self.load_messages()
 
-            self.periodic_update_event = Clock.schedule_interval(refresh, 10)
-            print("🔁 Started user chat polling every 10s.")
+            self.periodic_update_event = Clock.schedule_interval(refresh, 30)  # Every 30 seconds
+            print("🔁 Started user chat polling every 30s")
+            
         except Exception as e:
             print(f"❌ start_polling error: {e}")
+
+    def logout_user(self):
+        """Logout user"""
+        try:
+            print("🚪 Logging out from UserChat...")
+            db = DatabaseManager()
+            db.logout_current_user()
+            self.manager.current = "login"
+        except Exception as e:
+            print(f"Logout error: {e}")
 
 
 # ADD SETTINGS SCREEN CLASS AFTER ChatScreen
@@ -1565,6 +2155,294 @@ class SettingsRouter(Screen):
             self.manager.current = "login"
 
 
+from kivy.app import App
+from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.button import Button
+from kivy.uix.label import Label
+from kivy.uix.image import AsyncImage
+from kivy.uix.popup import Popup
+from kivy.uix.video import Video
+from kivy.properties import StringProperty, ListProperty, BooleanProperty
+from kivy.clock import Clock
+from kivy.metrics import dp
+from kivy.uix.behaviors import ButtonBehavior
+
+
+class AdminMessageCard(ButtonBehavior, BoxLayout):
+    # -------------------------
+    # Message properties
+    # -------------------------
+    message_id = StringProperty("")
+    message_type = StringProperty("text")  # text | image | video | document
+    content_text = StringProperty("")
+    caption_text = StringProperty("")
+    media_path = StringProperty("")
+    media_name = StringProperty("")
+    timestamp = StringProperty("")
+    status = StringProperty("sent")  # sent | delivered | read
+    tick_icon = StringProperty("")
+    tick_color = ListProperty([0.5, 0.5, 0.5, 1])
+
+    # -------------------------
+    # Internal state
+    # -------------------------
+    stats_visible = BooleanProperty(False)
+    long_press_time = 0.5
+    _press_clock = None
+
+    # -------------------------
+    # Event hooks
+    # -------------------------
+    def on_pin(self):
+        """Triggered when user pins this message."""
+        print(f"📌 [PIN] Message {self.message_id} pinned")
+
+    def on_delete(self):
+        """Triggered when user deletes this message."""
+        print(f"🗑️ [DELETE] Message {self.message_id} deleted")
+
+    # -------------------------
+    # Initialization
+    # -------------------------
+    
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        print(f"🧩 [INIT] AdminMessageCard({self.message_id}) created with status='{self.status}'")
+
+        self.orientation = "vertical"
+        self.size_hint_y = None
+        self.height = self.minimum_height
+        self.padding = dp(10)
+        self.spacing = dp(8)
+        self._ui_built = False
+
+        # Bind status changes to tick updater
+        self.bind(status=self._on_status_change)
+
+        # Build UI once
+        Clock.schedule_once(self._build_ui, 0.05)
+
+
+    
+
+    # -------------------------
+    # Tick / status handling
+    # -------------------------
+    def _on_status_change(self, value):
+        """
+        Called whenever a message's delivery status changes.
+        Updates the tick icon and color safely and ensures it stays visible.
+        Uses the tick_label and footer defined in the KV file.
+        """
+        print(f"🔄 [STATUS_CHANGE] Message {self.message_id}: new status='{value}'")
+
+        # --- Decide tick icon and color ---
+        if value == "sent":
+            self.tick_icon = "✓"
+            self.tick_color = [0.6, 0.6, 0.6, 1]  # gray
+        elif value == "delivered":
+            self.tick_icon = "✓✓"
+            self.tick_color = [0.6, 0.6, 0.6, 1]  # gray
+        elif value == "read":
+            self.tick_icon = "✓✓"
+            self.tick_color = [0.1, 0.6, 1, 1]    # blue
+        else:
+            print(f"⚠️ [STATUS_CHANGE] Unknown status '{value}' for {self.message_id}")
+            return
+
+        print(f"🧾 [STATUS_CHANGE] -> Tick icon='{self.tick_icon}', color={self.tick_color}")
+
+        # --- Update tick label from KV ---
+        tick_label = getattr(self.ids, "tick_label", None)
+        if tick_label:
+            tick_label.text = self.tick_icon
+            tick_label.color = self.tick_color
+            tick_label.opacity = 1
+            tick_label.disabled = False
+
+            # Debug print to confirm updates
+            print(f"🎯 [STATUS_CHANGE] Updated KV tick_label for {self.message_id}")
+        else:
+            print(f"⚠️ [STATUS_CHANGE] tick_label not found in ids for {self.message_id}")
+
+        # --- Request redraws to ensure UI updates immediately ---
+        if tick_label:
+            tick_label.canvas.ask_update()
+            parent = tick_label.parent
+            if parent:
+                parent.canvas.ask_update()
+                parent.do_layout()
+
+        self.canvas.ask_update()
+
+        print(f"✅ [STATUS_CHANGE] Finalized visual update for {self.message_id}")
+
+
+
+    # -------------------------
+    # UI construction
+    # -------------------------
+    
+    
+    def _build_ui(self, *args):
+        """
+        Builds or refreshes the message UI by updating KV-bound properties.
+        No dynamic widget creation — the KV layout handles structure.
+        """
+        from kivy.clock import Clock
+
+        # Prevent recursion
+        if getattr(self, "_ui_building", False):
+            print(f"🚫 [BUILD_UI] Reentry prevented for {self.message_id}")
+            return
+        self._ui_building = True
+
+        print(f"🏗️ [BUILD_UI] Building UI for message {self.message_id}")
+
+        # --- Update text content ---
+        text = self.caption_text if getattr(self, "caption_text", None) else self.content_text
+        self.content_text = text or ""
+
+        # --- Update media path and type ---
+        if getattr(self, "media_path", None):
+            if self.message_type == "image":
+                print(f"🖼️ [BUILD_UI] Preparing image for {self.message_id}")
+            elif self.message_type == "video":
+                print(f"🎞️ [BUILD_UI] Preparing video for {self.message_id}")
+        else:
+            print(f"📭 [BUILD_UI] No media attached for {self.message_id}")
+
+        # --- Update footer fields ---
+        self.timestamp = getattr(self, "timestamp", "")
+        self.tick_icon = getattr(self, "tick_icon", "")
+        self.tick_color = getattr(self, "tick_color", [0.5, 0.5, 0.5, 1])
+
+        # Force KV to refresh visible bindings
+        if "tick_label" in self.ids:
+            tick_label = self.ids.tick_label
+            tick_label.text = self.tick_icon or "✓"
+            tick_label.color = self.tick_color
+            tick_label.opacity = 1
+            print(f"✅ [BUILD_UI] Updated tick_label in KV for {self.message_id}")
+        else:
+            print(f"⚠️ [BUILD_UI] tick_label not found in ids for {self.message_id}")
+
+        # --- Trigger status-based visuals (✓, ✓✓, blue color, etc.) ---
+        Clock.schedule_once(lambda dt: self._on_status_change(self.status), 0)
+
+        # --- Finalize ---
+        self._ui_built = True
+        self._ui_building = False
+        print(f"🎯 [BUILD_UI] Finalized UI build for {self.message_id}")
+
+    # -------------------------
+    # Media viewer
+    # -------------------------
+    def _on_media_touch(self, instance, touch):
+        if instance.collide_point(*touch.pos):
+            print(f"👆 [MEDIA_TOUCH] Opening viewer for {self.media_path}")
+            self.open_media_viewer()
+
+    def open_media_viewer(self):
+        if not self.media_path:
+            print(f"⚠️ [MEDIA_VIEWER] No media for message {self.message_id}")
+            return
+        layout = BoxLayout(orientation="vertical", padding=dp(10), spacing=dp(10))
+        viewer = None
+        if self.message_type == "image":
+            viewer = AsyncImage(source=self.media_path, allow_stretch=True, keep_ratio=True)
+        elif self.message_type == "video":
+            viewer = Video(source=self.media_path, state="play", options={"eos": "loop"}, allow_stretch=True)
+        if viewer:
+            layout.add_widget(viewer)
+        close_btn = Button(
+            text="Close",
+            size_hint_y=None,
+            height=dp(45),
+            background_color=(0.1, 0.1, 0.1, 1),
+            color=(1, 1, 1, 1)
+        )
+        popup = Popup(
+            title=self.media_name or "Media Viewer",
+            content=layout,
+            size_hint=(0.95, 0.9),
+            background_color=(0, 0, 0, 0.8),
+            auto_dismiss=False
+        )
+        close_btn.bind(on_release=lambda *_: popup.dismiss())
+        layout.add_widget(close_btn)
+        popup.open()
+        print(f"📸 [MEDIA_VIEWER] Popup opened for {self.media_path}")
+
+    # -------------------------
+    # Long press / right-click
+    # -------------------------
+    def on_touch_down(self, touch):
+        if self.collide_point(*touch.pos):
+            if 'button' in touch.profile and touch.button == "right":
+                self._show_context_menu()
+                return True
+            self._press_clock = Clock.schedule_once(lambda dt: self._show_context_menu(), self.long_press_time)
+        return super().on_touch_down(touch)
+
+    def on_touch_up(self, touch):
+        if self._press_clock:
+            self._press_clock.cancel()
+            self._press_clock = None
+        return super().on_touch_up(touch)
+
+    # -------------------------
+    # Context menu
+    # -------------------------
+    def _show_context_menu(self):
+        print(f"📋 [CONTEXT_MENU] Showing menu for message {self.message_id}")
+        layout = BoxLayout(orientation="vertical", padding=dp(10), spacing=dp(8))
+        pin_btn = Button(text="📌 Pin Message", size_hint_y=None, height=dp(40))
+        del_btn = Button(text="🗑️ Delete Message", size_hint_y=None, height=dp(40))
+        cancel_btn = Button(text="Cancel", size_hint_y=None, height=dp(40))
+        layout.add_widget(pin_btn)
+        layout.add_widget(del_btn)
+        layout.add_widget(cancel_btn)
+        popup = Popup(
+            title="Message Options",
+            content=layout,
+            size_hint=(None, None),
+            size=(dp(200), dp(200)),
+            background_color=(0, 0, 0, 0.85),
+            auto_dismiss=True
+        )
+
+        pin_btn.bind(on_release=lambda *_: self._pin(popup))
+        del_btn.bind(on_release=lambda *_: self._delete(popup))
+        cancel_btn.bind(on_release=popup.dismiss)
+        popup.open()
+
+    def _pin(self, popup):
+        popup.dismiss()
+        print(f"📌 [ACTION] Pinning message {self.message_id}")
+        self.on_pin()
+
+    def _delete(self, popup):
+        popup.dismiss()
+        print(f"🗑️ [ACTION] Deleting message {self.message_id}")
+        self.on_delete()
+
+
+
+
+
+from kivy.uix.screenmanager import Screen
+from kivy.properties import ListProperty
+from kivy.metrics import dp, sp
+from kivy.clock import Clock
+from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.label import Label
+from kivy.uix.button import Button
+
+# Ensure DatabaseManager is imported from your database handler module
+#from database_manager import DatabaseManager
+
+
 class AdminSettingsScreen(Screen):
     """Admin Settings screen: manage users and logout."""
 
@@ -1576,96 +2454,239 @@ class AdminSettingsScreen(Screen):
         self.current_user = None
 
     def on_enter(self):
-        """Load all users for admin management."""
+        """Load all users and current admin info."""
         try:
             self.current_user = self.db_manager.get_current_user()
+            if self.current_user:
+                # ✅ Update the admin info label
+                self.ids.current_user_info.text = (
+                    f"👤 {self.current_user['name']}\n"
+                    f"📧 {self.current_user['email']}\n"
+                    f"📍 Region: {self.current_user.get('region', 'Nairobi')}\n"
+                    f"👑 Role: Admin"
+                )
+            else:
+                self.ids.current_user_info.text = "❌ Could not load admin details. Please log in again."
+                print("⚠️ No current user found, redirecting to login...")
+                Clock.schedule_once(lambda dt: setattr(self.manager, 'current', 'login'), 2)
+                return
+
+            # ✅ Load all users into the list
             self.load_all_users()
+
         except Exception as e:
-            print(f"AdminSettingsScreen init error: {e}")
+            print(f"AdminSettingsScreen on_enter error: {e}")
 
     def load_all_users(self):
-        """Fetch all users and display them in the list."""
+        """Fetch all users and display them."""
         try:
             users = self.db_manager.get_all_users()
-            self.ids.users_list.clear_widgets()
+            self.users = users
+            users_list = self.ids.users_list
+            users_list.clear_widgets()
 
             for user in users:
                 self.add_user_to_list(user)
 
-            print(f"✅ Loaded {len(users)} users for admin panel")
+            print(f"✅ Loaded {len(users)} users in Admin panel")
 
         except Exception as e:
             print(f"Error loading users: {e}")
 
     def add_user_to_list(self, user):
-        """Add user widget to list with promote/demote button."""
+        """Add user info row to the list with Font Awesome buttons."""
         layout = BoxLayout(
             orientation="horizontal",
             size_hint_y=None,
             height=dp(50),
             spacing=dp(10),
-            padding=dp(5)
+            padding=[dp(10), dp(5)]
         )
 
-        info = Label(
-            text=f"{user['name']} ({user['email']})",
-            size_hint_x=0.6,
+        # Background for user item
+        with layout.canvas.before:
+            Color(0.15, 0.15, 0.15, 0.7)
+            layout.rect = RoundedRectangle(
+                pos=layout.pos,
+                size=layout.size,
+                radius=[dp(8),]
+            )
+        layout.bind(pos=self._update_user_item_rect, size=self._update_user_item_rect)
+
+        # User info (name and email)
+        user_info_layout = BoxLayout(
+            orientation="vertical",
+            size_hint_x=0.6
+        )
+        
+        user_name = Label(
+            text=user['name'],
+            font_size=sp(14),
+            color=(1, 1, 1, 1),
             halign="left",
             valign="middle",
-            text_size=(dp(180), None)
+            text_size=(dp(200), None)
         )
+        
+        user_email = Label(
+            text=user['email'],
+            font_size=sp(11),
+            color=(1, 1, 1, 0.7),
+            halign="left",
+            valign="middle",
+            text_size=(dp(200), None)
+        )
+        
+        user_info_layout.add_widget(user_name)
+        user_info_layout.add_widget(user_email)
 
-        status = Label(
-            text="👑 Admin" if user["is_admin"] else "👤 User",
+        # Role badge
+        role_layout = BoxLayout(
+            orientation="vertical",
+            size_hint_x=0.2
+        )
+        
+        role_icon = Label(
+            text="👑" if user["is_admin"] else "👤",
+            font_size=sp(16),
+            color=(0.949, 0.788, 0.298, 1) if user["is_admin"] else (0.7, 0.7, 0.7, 1)
+        )
+        
+        role_text = Label(
+            text="Admin" if user["is_admin"] else "User",
+            font_size=sp(10),
+            color=(0.949, 0.788, 0.298, 1) if user["is_admin"] else (0.7, 0.7, 0.7, 1)
+        )
+        
+        role_layout.add_widget(role_icon)
+        role_layout.add_widget(role_text)
+
+        # Action button - Font Awesome icons
+        action_layout = BoxLayout(
+            orientation="horizontal",
             size_hint_x=0.2,
-            color=(0.9, 0.8, 0.1, 1) if user["is_admin"] else (0.8, 0.8, 0.8, 1),
-            font_size=sp(11)
+            spacing=dp(5)
         )
 
-        # Button logic
-        if user["id"] != self.current_user["id"]:
-            btn = Button(
-                text="Demote" if user["is_admin"] else "Promote",
-                size_hint_x=0.2,
-                background_color=(0.2, 0.7, 0.3, 1) if not user["is_admin"] else (0.9, 0.2, 0.2, 1),
-                on_press=lambda _, u=user: self.toggle_user_role(u)
-            )
+        # Show action buttons only for other users, not current user
+        if self.current_user and user["email"] != self.current_user["email"]:
+            if user["is_admin"]:
+                # Demote button (admin -> user)
+                demote_btn = Button(
+                    size_hint=(None, None),
+                    size=(dp(35), dp(35)),
+                    background_normal='',
+                    background_color=(0.8, 0.2, 0.2, 1),
+                    font_name='FontAwesomeSolid',
+                    text='\uf506',  # user-minus icon
+                    font_size=sp(14),
+                    color=(1, 1, 1, 1),
+                    on_press=lambda _, u=user: self.toggle_user_role(u)
+                )
+                action_layout.add_widget(demote_btn)
+            else:
+                # Promote button (user -> admin)
+                promote_btn = Button(
+                    size_hint=(None, None),
+                    size=(dp(35), dp(35)),
+                    background_normal='',
+                    background_color=(0.2, 0.7, 0.2, 1),
+                    font_name='FontAwesomeSolid',
+                    text='\uf234',  # user-plus icon
+                    font_size=sp(14),
+                    color=(1, 1, 1, 1),
+                    on_press=lambda _, u=user: self.toggle_user_role(u)
+                )
+                action_layout.add_widget(promote_btn)
         else:
-            btn = Widget(size_hint_x=0.2)
+            # Current user - show "You" indicator
+            you_label = Label(
+                text="You",
+                font_size=sp(10),
+                color=(0.2, 0.6, 1, 1),
+                bold=True
+            )
+            action_layout.add_widget(you_label)
 
-        layout.add_widget(info)
-        layout.add_widget(status)
-        layout.add_widget(btn)
+        # Add all components to main layout
+        layout.add_widget(user_info_layout)
+        layout.add_widget(role_layout)
+        layout.add_widget(action_layout)
+        
         self.ids.users_list.add_widget(layout)
 
+    def _update_user_item_rect(self, instance, value):
+        """Update the background rectangle position and size."""
+        instance.rect.pos = instance.pos
+        instance.rect.size = instance.size
+
     def toggle_user_role(self, user):
-        """Promote or demote a user (admin only)."""
+        """Promote or demote a user."""
         try:
             if user["is_admin"]:
                 print(f"🔽 Demoting {user['name']}...")
-                success = self.db_manager.demote_admin(user["id"])
+                success = self.db_manager.demote_from_admin(user["id"])
+                action = "demoted"
             else:
                 print(f"⬆ Promoting {user['name']}...")
                 success = self.db_manager.promote_to_admin(user["id"])
+                action = "promoted"
 
             if success:
-                print("✅ Role updated successfully")
-                Clock.schedule_once(lambda dt: self.load_all_users(), 1)
+                print(f"✅ User {action} successfully.")
+                # Show success feedback
+                self.show_action_feedback(f"User {action} successfully!")
+                # Reload the users list after a short delay
+                Clock.schedule_once(lambda dt: self.load_all_users(), 0.5)
             else:
-                print("❌ Role update failed")
+                print("❌ Failed to update role.")
+                self.show_action_feedback("Failed to update user role.", is_error=True)
 
         except Exception as e:
             print(f"Error updating role: {e}")
+            self.show_action_feedback("Error updating role.", is_error=True)
 
-    def logout(self):
-        """Logout and return to login screen."""
+    def show_action_feedback(self, message, is_error=False):
+        """Show feedback message for user actions."""
         try:
-            print("🚪 Admin logging out...")
+            if hasattr(self.ids, 'action_feedback'):
+                feedback_label = self.ids.action_feedback
+                feedback_label.text = message
+                feedback_label.color = (1, 0, 0, 1) if is_error else (0, 1, 0, 1)
+                feedback_label.opacity = 1
+                
+                # Fade out after 3 seconds
+                Clock.schedule_once(lambda dt: setattr(feedback_label, 'opacity', 0), 3)
+        except Exception as e:
+            print(f"Error showing feedback: {e}")
+
+    def promote_selected_user(self):
+        """Legacy method - kept for KV compatibility."""
+        print("ℹ️ Please use the promote button beside each user instead.")
+
+    def demote_selected_user(self):
+        """Legacy method - kept for KV compatibility."""
+        print("ℹ️ Please use the demote button beside each user instead.")
+
+    def logout_user(self):
+        try:
+            print("🚪 Logging out admin...")
             self.db_manager.logout_current_user()
             self.manager.current = "login"
         except Exception as e:
             print(f"Logout error: {e}")
 
+    def go_back(self):
+        try:
+            self.manager.current = "user_dashboard"
+            print("⬅️ Back to dashboard")
+        except Exception as e:
+            print(f"Back navigation error: {e}")
+            self.manager.current = "login"
+
+    def go_back_to_dashboard(self):
+        """Alias for KV compatibility."""
+        self.go_back()
 
 class UserSettingsScreen(Screen):
     """Regular user settings screen."""
@@ -1681,14 +2702,17 @@ class UserSettingsScreen(Screen):
                 self.manager.current = "login"
                 return
 
-            self.ids.user_info.text = (
-                f"👤 {user['name']}\n📧 {user['email']}\n"
+            # Update the display with user information
+            self.ids.current_user_info_user.text = (
+                f"👤 {user['name']}\n"
+                f"📧 {user['email']}\n"
+                f"📍 Region: {user.get('region', 'nairobi')}\n"
                 f"Role: User"
             )
         except Exception as e:
             print(f"User settings error: {e}")
 
-    def logout(self):
+    def logout_user(self):
         """Logout and go to login."""
         try:
             print("🚪 User logging out...")
@@ -1697,6 +2721,18 @@ class UserSettingsScreen(Screen):
         except Exception as e:
             print(f"Logout error: {e}")
 
+    def go_back(self):
+        """Navigate back to dashboard."""
+        try:
+            self.manager.current = 'user_dashboard'
+            print("Navigated back from User settings to dashboard")
+        except Exception as e:
+            print(f"Back navigation error: {e}")
+            self.manager.current = 'login'
+
+    def go_back_to_dashboard(self):
+        """Alias for go_back to match KV file."""
+        self.go_back()
 class RegistrationScreen(Screen):
     occupation_field_visible = BooleanProperty(True)
     show_institutions = BooleanProperty(True)
@@ -1975,47 +3011,45 @@ class LoginScreen(Screen):
             email = self.ids.email_input.text.strip()
             password = self.ids.password_input.text
 
+            # Verify credentials
             success, message, user_name, region, is_admin = self.db_manager.verify_user_credentials(email, password)
 
             if success:
-                # store in app global state so other screens can read it
+                # Fetch full user info
+                user_data = self.db_manager.get_user_by_email(email)
+                if not user_data:
+                    self.ids.password_error.text = "User data not found."
+                    self.ids.password_error.color = (1, 0, 0, 1)
+                    return
+
+                # Store in app global state
                 app = App.get_running_app()
-                app.user_email = email
-                app.user_name = user_name
-                app.user_region = region or "nairobi"
-                app.is_admin = bool(is_admin)
+                app.current_user = user_data
+                app.current_user_email = email
+                app.is_admin = user_data.get('is_admin', False)
+
+                print(f"Current user loaded: {user_data['name']} | Admin: {app.is_admin}")
 
                 # UI feedback
                 self.ids.email_error.text = ""
-                self.ids.password_error.text = ""
                 self.ids.password_error.color = (0, 1, 0, 1)
                 self.ids.password_error.text = "Login successful!"
-                print(f"Login successful for: {email}")
 
                 # Clear the form
                 self.ids.email_input.text = ""
                 self.ids.password_input.text = ""
 
-                # Route: if admin go to admin chat, else normal dashboard/user chat
-                # small delay to let UI show success text
+                # Route to dashboard (for both admin and user)
                 def _route(dt):
-                    if app.is_admin:
-                        # ensure your screen names exist
-                        self.manager.current = 'admin_chat'
-                    else:
-                        # set dashboard name and navigate (optional)
-                        try:
-                            dashboard_screen = self.manager.get_screen('user_dashboard')
-                            if user_name:
-                                dashboard_screen.first_name = user_name.split()[0]
-                        except Exception:
-                            pass
-                        self.manager.current = 'user_dashboard'
+                    dashboard_screen = self.manager.get_screen('user_dashboard')
+                    dashboard_screen.first_name = user_data['name'].split()[0]
+                    self.manager.current = 'user_dashboard'
 
                 from kivy.clock import Clock
                 Clock.schedule_once(_route, 0.5)
 
             else:
+                # Invalid login
                 self.ids.password_error.text = message
                 self.ids.password_error.color = (1, 0, 0, 1)
 
@@ -2023,35 +3057,37 @@ class LoginScreen(Screen):
             print(f"Login error: {e}")
             self.ids.password_error.text = "Login error. Please try again."
             self.ids.password_error.color = (1, 0, 0, 1)
-    
-    def navigate_to_dashboard(self, user_name):
-        """Navigate to user dashboard with user's first name"""
-        try:
-            dashboard_screen = self.manager.get_screen('user_dashboard')
-            
-            # Extract first name from full name
-            if user_name:
-                first_name = user_name.split()[0]  # Get first name
-                dashboard_screen.first_name = first_name
-                print(f"Setting dashboard first name to: {first_name}")
-            
-            self.manager.current = 'user_dashboard'
-            print("Navigated to user dashboard")
-            
-        except Exception as e:
-            print(f"Dashboard navigation error: {e}")
-    
-    def navigate_to_forgot_password(self):
-        try:
-            self.manager.current = 'forgot_password'
-        except Exception as e:
-            print(f"Navigation error: {e}")
-    
-    def navigate_to_registration(self):
-        try:
-            self.manager.current = 'registration'
-        except Exception as e:
-            print(f"Navigation error: {e}")
+
+
+
+            def navigate_to_dashboard(self, user_name):
+                """Navigate to user dashboard with user's first name"""
+                try:
+                    dashboard_screen = self.manager.get_screen('user_dashboard')
+
+                    # Extract first name from full name
+                    if user_name:
+                        first_name = user_name.split()[0]  # Get first name
+                        dashboard_screen.first_name = first_name
+                        print(f"Setting dashboard first name to: {first_name}")
+
+                    self.manager.current = 'user_dashboard'
+                    print("Navigated to user dashboard")
+
+                except Exception as e:
+                    print(f"Dashboard navigation error: {e}")
+
+            def navigate_to_forgot_password(self):
+                try:
+                    self.manager.current = 'forgot_password'
+                except Exception as e:
+                    print(f"Navigation error: {e}")
+
+            def navigate_to_registration(self):
+                try:
+                    self.manager.current = 'registration'
+                except Exception as e:
+                    print(f"Navigation error: {e}")
 
 class ForgotPasswordScreen(Screen):
     def __init__(self, **kwargs):

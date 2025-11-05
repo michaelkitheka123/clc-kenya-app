@@ -1622,30 +1622,16 @@
             
             # Back Button - Fixed icon centering
             Button:
+                on_press: root.go_back()
                 size_hint: None, None
                 size: dp(45), dp(45)
-                background_color: 0, 0, 0, 0  # Uncommented this line
                 background_normal: ''
-                on_press: root.go_back()
-                canvas.before:
-                    Color:
-                        rgba: 0.949, 0.788, 0.298, 0.9
-                    RoundedRectangle:
-                        pos: self.pos
-                        size: self.size
-                        radius: [dp(8),]
-                
-                # Fixed: Added AnchorLayout to center the icon
-                AnchorLayout:
-                    anchor_x: 'center'
-                    anchor_y: 'center'
-                    Label:
-                        text: '\uf060'  # FontAwesome arrow-left
-                        font_name: 'FontAwesomeSolid'
-                        font_size: sp(20)
-                        color: 1, 1, 1, 1
-                        size_hint: None, None
-                        size: self.texture_size
+                background_down: ''
+                background_color: 0, 0, 0, 0
+                font_name: 'FontAwesomeSolid'
+                text: '\uf060'  # arrow-left
+                font_size: sp(22)
+                color: 0, 0, 0, 1
             
             # Title - Properly centered
             Label:
@@ -2034,6 +2020,19 @@
             padding: [dp(20), dp(20), dp(20), dp(30)]
             spacing: dp(25)
             
+            # Back Button
+            Button:
+                on_press: root.go_back()
+                size_hint: None, None
+                size: dp(45), dp(45)
+                background_normal: ''
+                background_down: ''
+                background_color: 0, 0, 0, 0
+                font_name: 'FontAwesomeSolid'
+                text: '\uf060'  # arrow-left
+                font_size: sp(22)
+                color: 0, 0, 0, 1
+            
             # Header Section
             BoxLayout:
                 orientation: 'vertical'
@@ -2108,7 +2107,7 @@
             BoxLayout:
                 orientation: 'vertical'
                 size_hint_y: None
-                height: dp(300)
+                height: dp(350)  # Increased height for better spacing
                 padding: [dp(20), dp(15)]
                 spacing: dp(10)
                 
@@ -2134,9 +2133,20 @@
                     size_hint_y: None
                     height: dp(30)
                 
+                # Action Feedback Label
+                Label:
+                    id: action_feedback
+                    text: ''
+                    font_size: sp(12)
+                    color: 0, 1, 0, 0  # Start with 0 opacity
+                    halign: 'center'
+                    size_hint_y: None
+                    height: dp(20)
+                    opacity: 0
+                
                 ScrollView:
                     size_hint_y: None
-                    height: dp(180)
+                    height: dp(220)  # Increased height for better user list display
                     do_scroll_x: False
                     
                     BoxLayout:
@@ -2144,25 +2154,8 @@
                         orientation: 'vertical'
                         size_hint_y: None
                         height: self.minimum_height
-                        spacing: dp(5)
+                        spacing: dp(8)  # Increased spacing between user items
                         padding: [dp(5), dp(5)]
-                
-                BoxLayout:
-                    spacing: dp(10)
-                    size_hint_y: None
-                    height: dp(45)
-                    
-                    Button:
-                        text: "Promote to Admin"
-                        background_color: 0.145, 0.388, 0.922, 1
-                        color: 1, 1, 1, 1
-                        on_press: root.promote_selected_user()
-
-                    Button:
-                        text: "Demote Admin"
-                        background_color: 0.8, 0.2, 0.2, 1
-                        color: 1, 1, 1, 1
-                        on_press: root.demote_selected_user()
 
             # Logout / Back
             BoxLayout:
@@ -2213,6 +2206,20 @@
             padding: [dp(20), dp(20), dp(20), dp(30)]
             spacing: dp(25)
             
+            # Back Button
+            Button:
+                on_press: root.go_back()
+                size_hint: None, None
+                size: dp(45), dp(45)
+                background_normal: ''
+                background_down: ''
+                background_color: 0, 0, 0, 0
+                font_name: 'FontAwesomeSolid'
+                text: '\uf060'  # arrow-left
+                font_size: sp(22)
+                color: 0, 0, 0, 1
+            
+            # Header Section
             BoxLayout:
                 orientation: 'vertical'
                 size_hint_y: None
@@ -2241,6 +2248,7 @@
                     halign: 'center'
                     valign: 'middle'
 
+            # Current User Info
             BoxLayout:
                 orientation: 'vertical'
                 size_hint_y: None
@@ -2299,6 +2307,7 @@
                     color: 1, 1, 1, 1
                     on_press: root.go_back_to_dashboard()
 
+
 #:import dp kivy.metrics.dp
 #:import sp kivy.metrics.sp
 #:import Window kivy.core.window.Window
@@ -2316,36 +2325,58 @@
     size: dp(36), dp(36)
 
 # ======================================================
-# 👑 ADMIN CHAT SCREEN
+# 👑 ADMIN CHAT SCREEN (fixed alignment + clean layout)
 # ======================================================
 <AdminChatScreen>:
     name: 'admin_chat'
+
     canvas.before:
         Color:
-            rgba: 0.98, 0.97, 0.94, 1  # light cream background
+            rgba: 0.06, 0.06, 0.08, 1  # deep graphite
         Rectangle:
             pos: self.pos
             size: self.size
 
     BoxLayout:
         orientation: 'vertical'
-        spacing: dp(6)
+        spacing: dp(8)
+        padding: [dp(10), dp(10), dp(10), dp(6)]
 
-        # ===== PINNED USERS BAR =====
+        # --- Top Bar ---
+        BoxLayout:
+            size_hint_y: None
+            height: dp(55)
+            padding: [0, dp(6)]
+            Label:
+                text: "Admin Chat"
+                font_size: sp(20)
+                bold: True
+                color: 0.8, 1, 0.8, 1
+            Button:
+                on_press: root.go_back()
+                size_hint: None, None
+                size: dp(45), dp(45)
+                background_normal: ''
+                background_color: 0, 0, 0, 0
+                text: '\uf060'
+                font_name: 'FontAwesomeSolid'
+                font_size: sp(22)
+                color: 0.4, 1, 0.6, 1
+
+        # --- Pinned Bar ---
         BoxLayout:
             id: pinned_bar
             size_hint_y: None
-            height: dp(80)
+            height: dp(70)
             padding: dp(10)
             spacing: dp(10)
             canvas.before:
                 Color:
-                    rgba: 1, 0.4, 0.2, 0.1  # faint orange-red band
+                    rgba: 0, 0.5, 0.2, 0.15
                 RoundedRectangle:
                     pos: self.pos
                     size: self.size
-                    radius: [dp(10),]
-
+                    radius: [dp(12)]
             ScrollView:
                 do_scroll_y: False
                 do_scroll_x: True
@@ -2358,179 +2389,172 @@
                     spacing: dp(8)
                     height: self.minimum_height
 
-        # ===== MESSAGES AREA =====
+        # --- Messages Area ---
         ScrollView:
             id: scroll_view
             bar_width: dp(6)
             do_scroll_x: False
-
             GridLayout:
                 id: message_container
                 cols: 1
                 size_hint_y: None
                 height: self.minimum_height
                 padding: dp(10)
-                spacing: dp(12)
+                spacing: dp(10)
 
-        # ===== INPUT BAR (final) =====
+        # --- Input Bar ---
         BoxLayout:
-            id: input_bar
             size_hint_y: None
-            height: dp(68)
+            height: dp(70)
             padding: [dp(10), dp(8)]
             spacing: dp(8)
             canvas.before:
                 Color:
-                    rgba: 1, 0.95, 0.88, 1  # light cream
+                    rgba: 0.1, 0.1, 0.1, 1
                 RoundedRectangle:
                     pos: self.pos
                     size: self.size
-                    radius: [dp(14), dp(14), 0, 0]
-                Color:
-                    rgba: 1, 0.3, 0.1, 1  # orange-red border
-                Line:
-                    width: 1.2
-                    rounded_rectangle: (*self.pos, *self.size, dp(14), dp(14), 0, 0)
-        
-            # Emoji Button
+                    radius: [dp(16)]
             Button:
                 id: emoji_btn
-                size_hint_x: None
-                width: dp(45)
+                text: '\uf118'
+                font_name: 'FontAwesomeSolid'
                 background_normal: ''
-                background_down: ''
                 background_color: 0, 0, 0, 0
+                color: 0.6, 1, 0.6, 1
+                font_size: sp(22)
+                size_hint_x: None
+                width: dp(42)
                 on_press: root.open_emoji_picker()
-                BoxLayout:
-                    size: self.parent.size
-                    padding: dp(4)
-                    Label:
-                        text: '\uf118'  # smiley
-                        font_name: 'FontAwesomeSolid'
-                        color: 0, 0, 0, 1
-                        font_size: sp(22)
-                        halign: 'center'
-                        valign: 'middle'
-                        text_size: self.size
-        
-            # Message Input
             TextInput:
                 id: message_input
-                size_hint_x: 0.75
                 hint_text: 'Type a message...'
-                hint_text_color: 0.3, 0.3, 0.3, 1
-                foreground_color: 0, 0, 0, 1
-                background_color: 0.9, 1, 0.9, 0.6
-                cursor_color: 0, 0, 0, 1
+                hint_text_color: 0.5, 1, 0.5, 1
+                foreground_color: 0.95, 1, 0.95, 1
+                background_color: 0.05, 0.05, 0.05, 1
+                cursor_color: 0.5, 1, 0.5, 1
                 font_size: sp(17)
                 padding: [dp(12), dp(10)]
                 multiline: True
                 on_text_validate: root.send_message()
-        
-            # Attachment Button
             Button:
                 id: attach_btn
-                size_hint_x: None
-                width: dp(45)
+                text: '\uf0c6'
+                font_name: 'FontAwesomeSolid'
                 background_normal: ''
-                background_down: ''
                 background_color: 0, 0, 0, 0
+                color: 0.3, 0.9, 0.9, 1
+                font_size: sp(22)
+                size_hint_x: None
+                width: dp(42)
                 on_press: root.open_attachment_picker()
-                BoxLayout:
-                    size: self.parent.size
-                    padding: dp(4)
-                    Label:
-                        text: '\uf0c6'  # paperclip
-                        font_name: 'FontAwesomeSolid'
-                        color: 0, 0, 0, 1
-                        font_size: sp(22)
-                        halign: 'center'
-                        valign: 'middle'
-                        text_size: self.size
-        
-            # Send Button
             Button:
                 id: send_btn
-                size_hint_x: None
-                width: dp(56)
+                text: '\uf1d8'
+                font_name: 'FontAwesomeSolid'
                 background_normal: ''
-                background_down: ''
-                background_color: 1, 0.3, 0.1, 1
+                background_color: 0, 0, 0, 0
+                color: 0.6, 1, 0.6, 1
+                font_size: sp(23)
+                size_hint_x: None
+                width: dp(50)
                 on_release: root.send_message()
-                canvas.before:
-                    Color:
-                        rgba: 1, 0.3, 0.1, 1
-                    RoundedRectangle:
-                        pos: self.pos
-                        size: self.size
-                        radius: [dp(12), dp(12), dp(12), dp(12)]
-                BoxLayout:
-                    size: self.parent.size
-                    padding: dp(4)
-                    Label:
-                        text: '\uf1d8'  # send icon
-                        font_name: 'FontAwesomeSolid'
-                        color: 0, 0, 0, 1
-                        font_size: sp(22)
-                        halign: 'center'
-                        valign: 'middle'
-                        text_size: self.size
 
 
-# ======================================================
-# 🟩 ADMIN MESSAGE CARD
-# ======================================================
-<AdminMessageCard@BoxLayout>:
-    orientation: 'vertical'
+<AdminMessageCard>:
     size_hint_y: None
     height: self.minimum_height
-    padding: dp(10)
+    padding: [dp(10), dp(8)]
     spacing: dp(8)
-    message_type: 'text'
-    content_text: ''
-    media_path: ''
-    media_name: ''
-    timestamp: ''
-    status: 'sent'
+
     canvas.before:
+        # Bubble background
         Color:
-            rgba: 0.7, 1, 0.7, 0.6  # translucent light-green card
+            rgba: (0.10, 0.25, 0.10, 1)
         RoundedRectangle:
             pos: self.pos
             size: self.size
-            radius: [dp(12),]
+            radius: [dp(14)]
+        # Optional border
         Color:
-            rgba: 1, 0.4, 0.2, 1  # orange-red border
+            rgba: (0.0, 0.8, 0.3, 1)
         Line:
-            rounded_rectangle: [self.x, self.y, self.width, self.height, dp(12)]
+            rounded_rectangle: (self.x, self.y, self.width, self.height, dp(14))
             width: 1.2
 
-    Label:
-        text: root.content_text if root.message_type == 'text' else ''
-        color: 0, 0, 0, 1
-        font_size: sp(16)
-        text_size: self.width, None
-        halign: 'left'
-        valign: 'middle'
+    # --- Horizontal Layout (Image + TextBlock) ---
+    BoxLayout:
+        orientation: 'horizontal'
+        spacing: dp(8)
         size_hint_y: None
-        height: self.texture_size[1] + dp(8)
+        height: max(image_widget.height, text_block.height)
 
-    AsyncImage:
-        source: root.media_path if root.message_type == 'image' else ''
-        size_hint_y: None
-        height: dp(180) if root.message_type == 'image' else 0
-        allow_stretch: True
-        keep_ratio: True
-        on_touch_down:
-            if self.collide_point(*args[1].pos): root.open_media_viewer(root.message_id)
+        # --- Media ---
+        AsyncImage:
+            id: image_widget
+            source: root.media_path if root.message_type == 'image' else ''
+            size_hint: None, None
+            size: (dp(120), dp(120)) if root.message_type == 'image' else (0, 0)
+            allow_stretch: True
+            keep_ratio: True
+            on_touch_down:
+                if self.collide_point(*args[1].pos): root.open_media_viewer(root.message_id)
 
-    Label:
-        text: root.timestamp
-        font_size: sp(12)
-        color: 0.2, 0.2, 0.2, 1
-        halign: 'right'
-        size_hint_y: None
-        height: dp(20)
+        # --- Text + Footer ---
+        BoxLayout:
+            id: text_block
+            orientation: 'vertical'
+            size_hint_x: 1
+            spacing: dp(4)
+            padding: [dp(4), 0, dp(4), 0]
+            size_hint_y: None
+            height: text_label.texture_size[1] + dp(40)  # safe static computation
+
+            # Message text
+            Label:
+                id: text_label
+                text: root.content_text if root.message_type == 'text' else ''
+                color: 1, 1, 1, 1
+                font_size: sp(16)
+                text_size: self.width, None
+                halign: 'left'
+                valign: 'top'
+                size_hint_y: None
+                height: self.texture_size[1] + dp(10)
+
+            # Footer (timestamp + ticks)
+            AnchorLayout:
+                size_hint_y: None
+                height: dp(20)
+                anchor_x: 'right'
+                anchor_y: 'bottom'
+                BoxLayout:
+                    orientation: 'horizontal'
+                    spacing: dp(5)
+                    size_hint: None, None
+                    height: dp(20)
+                    width: tick_label.texture_size[0] + timestamp_label.texture_size[0] + dp(30)
+
+                    Label:
+                        id: timestamp_label
+                        text: root.timestamp
+                        font_size: sp(11)
+                        color: 0.8, 0.8, 0.8, 1
+                        size_hint: None, None
+                        height: dp(20)
+                        width: self.texture_size[0] + dp(10)
+
+                    Label:
+                        id: tick_label
+                        text: root.tick_icon or ''
+                        font_name: 'FontAwesomeSolid'
+                        font_size: sp(14)
+                        color: root.tick_color
+                        size_hint: None, None
+                        height: dp(20)
+                        width: self.texture_size[0] + dp(8)
+
+
 
 
 # ======================================================
@@ -2538,56 +2562,84 @@
 # ======================================================
 <UserChatScreen>:
     name: "user_chat"
-    canvas.before:
-        Color:
-            rgba: 0.98, 0.97, 0.94, 1
-        Rectangle:
-            pos: self.pos
-            size: self.size
+    
+    Image:
+        source: 'assets/background.jpeg'
+        allow_stretch: True
+        keep_ratio: False
+        pos: self.pos
+        size: self.size
 
     BoxLayout:
         orientation: "vertical"
-        spacing: dp(6)
+        spacing: dp(0)
 
-        # ===== PINNED MESSAGES BAR =====
-        ScrollView:
+        # Header with back button and title
+        BoxLayout:
+            orientation: "horizontal"
             size_hint_y: None
-            height: dp(80)
-            do_scroll_x: True
-            bar_width: 0
+            height: dp(60)
+            padding: [dp(10), dp(5)]
+            spacing: dp(10)
+            
+            Button:
+                on_press: root.go_back()
+                size_hint: None, None
+                size: dp(45), dp(45)
+                background_normal: ''
+                background_down: ''
+                background_color: 0, 0, 0, 0
+                font_name: 'FontAwesomeSolid'
+                text: '\uf060'  # arrow-left
+                font_size: sp(22)
+                color: 1, 1, 1, 1
+            
+            Label:
+                text: "CLC Announcements"
+                font_size: sp(20)
+                bold: True
+                color: 1, 1, 1, 1
+                halign: 'left'
+                valign: 'middle'
 
-            BoxLayout:
-                id: pinned_strip
-                orientation: "horizontal"
-                size_hint_x: None
-                width: self.minimum_width
-                spacing: dp(10)
-                padding: dp(8)
-
-        # ===== MESSAGES AREA =====
+        # Messages area
         ScrollView:
             id: scroll_view
             do_scroll_x: False
             do_scroll_y: True
+            effect_cls: "ScrollEffect"
 
             BoxLayout:
                 id: message_container
                 orientation: "vertical"
                 size_hint_y: None
                 height: self.minimum_height
-                spacing: dp(10)
-                padding: dp(10)
+                spacing: dp(15)
+                padding: [dp(15), dp(10), dp(15), dp(20)]
 
-        # ===== LOGOUT BUTTON =====
-        Button:
-            text: "Logout"
+        # Status bar
+        BoxLayout:
+            orientation: "horizontal"
             size_hint_y: None
-            height: dp(56)
-            font_size: sp(16)
-            background_normal: ''
-            background_color: 1, 0.4, 0.2, 1
-            color: 1, 1, 1, 1
-            on_release: root.logout_user()
+            height: dp(40)
+            padding: [dp(10), dp(5)]
+            spacing: dp(10)
+            
+            Label:
+                id: status_label
+                text: "Loading messages..."
+                font_size: sp(12)
+                color: 1, 1, 1, 0.8
+                halign: 'left'
+                valign: 'middle'
+
+            Label:
+                id: last_update_label
+                text: ""
+                font_size: sp(12)
+                color: 1, 1, 1, 0.6
+                halign: 'right'
+                valign: 'middle'
 
 
 # ======================================================
@@ -2597,8 +2649,8 @@
     orientation: "vertical"
     size_hint_y: None
     height: self.minimum_height
-    padding: dp(10)
-    spacing: dp(6)
+    padding: [dp(15), dp(12)]
+    spacing: dp(8)
     message_type: "text"
     content: ""
     sender_name: ""
@@ -2608,46 +2660,90 @@
 
     canvas.before:
         Color:
-            rgba: 0.7, 1, 0.7, 0.6
+            rgba: 0.1, 0.1, 0.1, 0.85
         RoundedRectangle:
             pos: self.pos
             size: self.size
-            radius: [dp(12),]
+            radius: [dp(15),]
         Color:
-            rgba: 1, 0.4, 0.2, 1
+            rgba: 0.949, 0.788, 0.298, 0.6
         Line:
-            rounded_rectangle: [self.x, self.y, self.width, self.height, dp(12)]
-            width: 1.1
+            rounded_rectangle: [self.x, self.y, self.width, self.height, dp(15)]
+            width: dp(1.5)
 
+    # Header with sender and timestamp
+    BoxLayout:
+        orientation: "horizontal"
+        size_hint_y: None
+        height: dp(25)
+        spacing: dp(10)
+        
+        Label:
+            text: root.sender_name
+            font_size: sp(16)
+            bold: True
+            color: 0.949, 0.788, 0.298, 1
+            halign: 'left'
+            valign: 'middle'
+            text_size: self.width, None
+            size_hint_x: 0.7
+        
+        Label:
+            text: root.timestamp
+            font_size: sp(12)
+            color: 1, 1, 1, 0.7
+            halign: 'right'
+            valign: 'middle'
+            text_size: self.width, None
+            size_hint_x: 0.3
+
+    # Content area
+    BoxLayout:
+        orientation: "vertical"
+        size_hint_y: None
+        height: self.minimum_height
+        spacing: dp(8)
+
+        # Text content
+        Label:
+            text: root.content if root.message_type == "text" else ""
+            color: 1, 1, 1, 0.9
+            font_size: sp(15)
+            text_size: self.width, None
+            halign: "left"
+            valign: "top"
+            size_hint_y: None
+            height: self.texture_size[1] + dp(8)
+
+        # Media content
+        BoxLayout:
+            orientation: "vertical"
+            size_hint_y: None
+            height: dp(200) if root.message_type == "image" and root.media_path else 0
+            
+            AsyncImage:
+                source: root.media_path if root.message_type == "image" else ""
+                allow_stretch: True
+                keep_ratio: True
+                size_hint_y: None
+                height: dp(200) if root.message_type == "image" and root.media_path else 0
+                on_touch_down:
+                    if self.collide_point(*args[1].pos) and root.media_path: app.root.open_fullscreen_media(root.media_path)
+
+            Label:
+                text: root.media_name if root.media_path and root.message_type != "text" else ""
+                font_size: sp(11)
+                color: 1, 1, 1, 0.6
+                size_hint_y: None
+                height: dp(20) if root.media_path and root.message_type != "text" else 0
+                halign: 'center'
+                text_size: self.width, None
+
+    # Message type indicator
     Label:
-        text: root.sender_name
-        font_size: sp(14)
-        color: 0, 0, 0, 1
+        text: "📎 Attachment" if root.message_type != "text" else ""
+        font_size: sp(11)
+        color: 0.949, 0.788, 0.298, 0.8
         size_hint_y: None
-        height: self.texture_size[1] + dp(4)
-
-    Label:
-        text: root.content if root.message_type == "text" else ""
-        color: 0, 0, 0, 1
-        font_size: sp(16)
-        text_size: self.width, None
-        halign: "left"
-        size_hint_y: None
-        height: self.texture_size[1] + dp(8)
-
-    AsyncImage:
-        source: root.media_path if root.message_type == "image" else ""
-        allow_stretch: True
-        keep_ratio: True
-        size_hint_y: None
-        height: dp(180) if root.message_type == "image" else 0
-        on_touch_down:
-            if self.collide_point(*args[1].pos): app.root.open_fullscreen_media(root.media_path)
-
-    Label:
-        text: root.timestamp
-        size_hint_y: None
-        height: dp(18)
-        font_size: sp(12)
-        color: 0.3, 0.3, 0.3, 1
-        halign: "right"
+        height: dp(15) if root.message_type != "text" else 0
+        halign: 'left'

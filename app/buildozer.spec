@@ -1,62 +1,51 @@
 [app]
-# App title
 title = CLC Kenya
-
-# Package name (MUST BE UNIQUE - change if needed)
 package.name = clckenya
-
-# Package domain (reverse format)
 package.domain = org.clckenya
 
-# Source directory
+# Path setup
 source.dir = .
-
-# Main entry point
 source.main = main.py
 
-# Include ALL your file types
-source.include_exts = py,png,jpg,jpeg,kv,atlas,ttf,otf,json
+# Include important files
+source.include_exts = py,png,jpg,jpeg,kv,atlas,ttf,otf,json,db
 
-# Requirements - CRITICAL SECTION!
-requirements = 
-    python3,
-    kivy==2.3.0,
-    openssl,
-    requests,
-    certifi,
-    chardet,
-    idna,
-    urllib3
+# App requirements
+requirements = python3,kivy==2.3.0,openssl,requests,certifi,chardet,idna,urllib3
 
-# Android API settings
+# Android settings
 android.api = 33
 android.minapi = 21
-android.sdk = 21
 android.ndk = 25b
 
-# Permissions
-android.permissions = 
-    INTERNET,
-    ACCESS_NETWORK_STATE,
-    WRITE_EXTERNAL_STORAGE,
-    READ_EXTERNAL_STORAGE
+# Important for CI builds — prevents some interactive prompts
+android.accept_sdk_license = True
+android.accept_ndk_license = True
 
-# App version
+# Permissions your app needs
+android.permissions = INTERNET,ACCESS_NETWORK_STATE,WRITE_EXTERNAL_STORAGE,READ_EXTERNAL_STORAGE
+
+# App details
 version = 0.1
-
-# Orientation
 orientation = portrait
 
-# Icons
+# Branding
 icon.filename = assets/logo.png
 presplash.filename = assets/logo.png
 
-# Build type (debug for testing)
+# Debug build type
 build_type = debug
 
-# Accept SDK licenses automatically
-android.accept_sdk_license = True
+# Disable logcat spam
+log_level = 2
+
+# Automatically download build tools
+android.sdk_path = ~/.buildozer/android/platform/android-sdk
+android.ndk_path = ~/.buildozer/android/platform/android-ndk-r25b
+
+# Reduce CI crashes
+p4a.branch = master
 
 [buildozer]
-# Log level (2 = verbose)
+warn_on_root = 0
 log_level = 2
