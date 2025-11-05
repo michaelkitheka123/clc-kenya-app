@@ -37,10 +37,10 @@ android.permissions = INTERNET,ACCESS_NETWORK_STATE,WRITE_EXTERNAL_STORAGE,READ_
 version = 0.1
 icon.filename = assets/logo.png
 presplash.filename = assets/presplash.png
-presplash.keep_ratio = False        # 🔥 makes it fill the entire screen
+presplash.keep_ratio = False        
 presplash.scale = 1.0
 presplash.background_color = #0b1524
-fullscreen = 1                      # Ensures black bars are removed
+fullscreen = 1                      
 
 # ---------------------------------------------------
 # Logging & Debug
