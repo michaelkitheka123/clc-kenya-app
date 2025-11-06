@@ -14,8 +14,7 @@ source.include_exts = py,png,jpg,jpeg,kv,atlas,ttf,otf,json,db
 # App Requirements
 # ---------------------------------------------------
 # Core + Networking + AppWrite SDK + Email + SQLite
-requirements = python3==3.11.13,kivy==2.3.1,openssl,requests,urllib3,certifi,chardet,idna,sqlite3,appwrite
-
+requirements = python3==3.11.13,kivy==2.3.1,Pillow,openssl,requests,urllib3,certifi,chardet,idna,appwrite
 # ---------------------------------------------------
 # Android Settings
 # ---------------------------------------------------
@@ -66,8 +65,7 @@ android.strip_debug = True
 android.requirements_all = False
 
 # Ensure OpenSSL libraries link correctly on ARM
-android.add_libs_armeabi_v7a = libcrypto1.1.so,libssl1.1.so
-android.add_libs_arm64_v8a = libcrypto1.1.so,libssl1.1.so
+
 
 # ---------------------------------------------------
 # Fixes & Stability
