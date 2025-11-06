@@ -38,13 +38,14 @@ icon.filename = assets/logo.png
 
 # Presplash / splashscreen settings
 presplash.filename = assets/presplash.png
-presplash.keep_ratio = True          
-presplash.scale = 0.5                
+presplash.keep_ratio = True
+presplash.scale = 1.0
 presplash.background_color = #0b1524
 
 # Fullscreen
-fullscreen = auto                   
-                
+fullscreen = 1
+
+ 
 
 # ---------------------------------------------------
 # Logging & Debug
